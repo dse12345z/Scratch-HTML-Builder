@@ -1306,10 +1306,6 @@
       return block;
     }
 
-    function getVisibleBlockTypes() {
-      return blockTypes.filter(definition => !definition.hiddenFromToolbox).map(definition => definition.type);
-    }
-
     function loadFavoriteBlockTypes() {
       try {
         const saved = JSON.parse(localStorage.getItem(favoriteStorageKey) || "null");
@@ -1318,7 +1314,7 @@
         localStorage.removeItem(favoriteStorageKey);
       }
 
-      return getVisibleBlockTypes();
+      return [];
     }
 
     function saveFavoriteBlockTypes() {
