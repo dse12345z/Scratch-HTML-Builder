@@ -923,7 +923,7 @@
       }
 
       .preview-pane {
-        grid-template-rows: 280px 260px;
+        grid-template-rows: 280px 8px minmax(260px, 1fr);
       }
     }
   </style>
@@ -1735,7 +1735,7 @@ ${indent(body, 2)}
     }
 
     function showGlobalCodeErrors(errors) {
-      codeErrorMessage.textContent = errors.join("\n");
+      codeErrorMessage.textContent = getSyntaxErrorMessages(errors).join("\n");
       codeErrorPanel.hidden = false;
     }
 
@@ -2231,6 +2231,8 @@ ${indent(body, 2)}
       const errors = validateHtmlSyntax(html);
       if (errors.length) {
         showGlobalCodeErrors(errors);
+        state.blocks = parseBlocksFromHtmlWithErrors(html, errors);
+        renderWorkspace();
         preview.srcdoc = wrapBodyHtml(html);
         return;
       }
@@ -2260,12 +2262,18 @@ ${indent(body, 2)}
         if (isClosing) {
           const latest = stack.pop();
           if (!latest) {
-            errors.push(`多了結尾標籤 </${tagName}>。`);
+            errors.push({
+              message: `多了結尾標籤 </${tagName}>。`,
+              index: match.index
+            });
             continue;
           }
 
           if (latest.tagName !== tagName) {
-            errors.push(`標籤沒有正確關閉：<${latest.tagName}> 需要先補 </${latest.tagName}>，目前遇到 </${tagName}>。`);
+            errors.push({
+              message: `標籤沒有正確關閉：<${latest.tagName}> 需要先補 </${latest.tagName}>，目前遇到 </${tagName}>。`,
+              index: match.index
+            });
             const matchingIndex = stack.map(item => item.tagName).lastIndexOf(tagName);
             if (matchingIndex >= 0) {
               stack.splice(matchingIndex, 1);
@@ -2275,16 +2283,129 @@ ${indent(body, 2)}
         }
 
         if (!isSelfClosing) {
-          stack.push({ tagName });
+          stack.push({ tagName, index: match.index });
         }
       }
 
       while (stack.length) {
         const item = stack.pop();
-        errors.push(`缺少結尾標籤 </${item.tagName}>。`);
+        errors.push({
+          message: `缺少結尾標籤 </${item.tagName}>。`,
+          index: item.index
+        });
       }
 
       return errors;
+    }
+
+    function getSyntaxErrorMessages(errors) {
+      return errors.map(error => typeof error === "string" ? error : error.message);
+    }
+
+    function parseBlocksFromHtmlWithErrors(html, errors) {
+      const ranges = collectSyntaxErrorRanges(html, errors);
+      if (!ranges.length) {
+        return [
+          createBlockWithValues("html-error", {
+            message: getSyntaxErrorMessages(errors).join("\n"),
+            html
+          })
+        ];
+      }
+
+      const blocks = [];
+      let cursor = 0;
+      ranges.forEach(range => {
+        const before = html.slice(cursor, range.start);
+        blocks.push(...parseBlocksFromHtml(before));
+        blocks.push(createBlockWithValues("html-error", {
+          message: getSyntaxErrorMessages(range.errors).join("\n"),
+          html: html.slice(range.start, range.end).trim()
+        }));
+        cursor = range.end;
+      });
+      blocks.push(...parseBlocksFromHtml(html.slice(cursor)));
+      return blocks.filter(Boolean);
+    }
+
+    function collectSyntaxErrorRanges(html, errors) {
+      const ranges = [];
+      const stack = [];
+      const voidTags = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"]);
+      const tagPattern = /<!--[\s\S]*?-->|<!doctype[^>]*>|<\/?([a-zA-Z][\w:-]*)(?:\s[^<>]*)?>/gi;
+      let match;
+
+      while ((match = tagPattern.exec(html)) !== null) {
+        const token = match[0];
+        const tagName = match[1] ? match[1].toLowerCase() : "";
+        if (!tagName || token.startsWith("<!--") || token.toLowerCase().startsWith("<!doctype")) continue;
+
+        const isClosing = token.startsWith("</");
+        const isSelfClosing = token.endsWith("/>") || voidTags.has(tagName);
+
+        if (isClosing) {
+          const latest = stack.pop();
+          if (!latest) {
+            ranges.push({ start: match.index, end: tagPattern.lastIndex });
+            continue;
+          }
+
+          if (latest.tagName !== tagName) {
+            ranges.push({ start: latest.rootStart, end: tagPattern.lastIndex });
+            const matchingIndex = stack.map(item => item.tagName).lastIndexOf(tagName);
+            if (matchingIndex >= 0) {
+              stack.splice(matchingIndex, 1);
+            }
+          }
+          continue;
+        }
+
+        if (!isSelfClosing) {
+          stack.push({
+            tagName,
+            index: match.index,
+            rootStart: stack.length ? stack[0].rootStart : match.index
+          });
+        }
+      }
+
+      stack.forEach(item => {
+        ranges.push({ start: item.rootStart, end: html.length });
+      });
+
+      return mergeSyntaxErrorRanges(ranges, errors, html.length);
+    }
+
+    function mergeSyntaxErrorRanges(ranges, errors, htmlLength) {
+      const normalizedRanges = ranges
+        .map(range => ({
+          start: Math.max(0, Math.min(range.start, htmlLength)),
+          end: Math.max(0, Math.min(range.end, htmlLength))
+        }))
+        .filter(range => range.end > range.start)
+        .sort((a, b) => a.start - b.start);
+
+      const merged = [];
+      normalizedRanges.forEach(range => {
+        const previous = merged[merged.length - 1];
+        if (previous && range.start <= previous.end) {
+          previous.end = Math.max(previous.end, range.end);
+        } else {
+          merged.push({ ...range });
+        }
+      });
+
+      merged.forEach(range => {
+        range.errors = errors.filter(error => {
+          const index = typeof error === "string" ? range.start : error.index;
+          return index >= range.start && index <= range.end;
+        });
+        if (!range.errors.length) {
+          range.errors = errors;
+        }
+      });
+
+      return merged;
     }
 
     function parseBlocksFromHtml(html) {
@@ -2519,8 +2640,7 @@ ${indent(body, 2)}
       setTimeout(() => {
         const errors = validateHtmlSyntax(htmlOutput.value);
         if (errors.length) {
-          showGlobalCodeErrors(errors);
-          preview.srcdoc = wrapBodyHtml(htmlOutput.value);
+          syncWorkspaceFromHtml(htmlOutput.value);
           return;
         }
 
