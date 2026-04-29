@@ -653,6 +653,13 @@
       opacity: 0.5;
     }
 
+    .drop-placeholder {
+      min-height: 58px;
+      border: 2px dashed #7aaef0;
+      border-radius: 8px;
+      background: rgba(47, 140, 255, 0.12);
+    }
+
     .card-actions {
       display: flex;
       justify-content: space-between;
@@ -836,6 +843,29 @@
       text-align: right;
     }
 
+    .code-editor {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      min-height: 0;
+      overflow: hidden;
+      background: #101827;
+    }
+
+    .line-numbers {
+      min-width: 42px;
+      padding: 14px 8px 14px 12px;
+      overflow: hidden;
+      color: #778399;
+      background: #0d1421;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      text-align: right;
+      user-select: none;
+      white-space: pre;
+    }
+
     textarea.code {
       width: 100%;
       height: 100%;
@@ -1014,7 +1044,10 @@
                 <span class="copy-state" id="copyState"></span>
               </div>
             </div>
-            <textarea class="code" id="htmlOutput" spellcheck="false" aria-label="貼上或編輯 HTML" placeholder="貼上 HTML 片段，會自動反推工作區方塊"></textarea>
+            <div class="code-editor">
+              <div class="line-numbers" id="htmlLineNumbers" aria-hidden="true">1</div>
+              <textarea class="code" id="htmlOutput" spellcheck="false" aria-label="貼上或編輯 HTML" placeholder="貼上 HTML 片段，會自動反推工作區方塊"></textarea>
+            </div>
           </div>
         </div>
       </section>
@@ -1197,6 +1230,7 @@
       blocks: [],
       draggedBlockId: null,
       draggedSourceType: null,
+      dragPreviewIndex: null,
       platformMode: "web",
       iosMode: "wkwebview",
       iosFontScale: "1",
@@ -1219,6 +1253,7 @@
     const workspaceList = document.querySelector("#workspaceList");
     const emptyState = document.querySelector("#emptyState");
     const htmlOutput = document.querySelector("#htmlOutput");
+    const htmlLineNumbers = document.querySelector("#htmlLineNumbers");
     const preview = document.querySelector("#preview");
     const previewPane = document.querySelector(".preview-pane");
     const previewSplitter = document.querySelector("#previewSplitter");
@@ -1310,8 +1345,13 @@
         node.addEventListener("dragstart", event => {
           state.draggedSourceType = definition.type;
           state.draggedBlockId = null;
+          state.dragPreviewIndex = null;
           event.dataTransfer.effectAllowed = "copy";
           event.dataTransfer.setData("text/plain", definition.type);
+        });
+        node.addEventListener("dragend", () => {
+          clearDropPreview();
+          state.draggedSourceType = null;
         });
         node.addEventListener("click", () => {
           insertBlock(definition.type, state.blocks.length);
@@ -1341,8 +1381,13 @@
         node.addEventListener("dragstart", event => {
           state.draggedSourceType = definition.type;
           state.draggedBlockId = null;
+          state.dragPreviewIndex = null;
           event.dataTransfer.effectAllowed = "copy";
           event.dataTransfer.setData("text/plain", definition.type);
+        });
+        node.addEventListener("dragend", () => {
+          clearDropPreview();
+          state.draggedSourceType = null;
         });
 
         node.addEventListener("click", () => {
@@ -1479,6 +1524,7 @@
         card.addEventListener("dragstart", event => {
           state.draggedBlockId = block.id;
           state.draggedSourceType = null;
+          state.dragPreviewIndex = null;
           card.classList.add("dragging");
           event.dataTransfer.effectAllowed = "move";
           event.dataTransfer.setData("text/plain", block.id);
@@ -1486,6 +1532,9 @@
 
         card.addEventListener("dragend", () => {
           card.classList.remove("dragging");
+          clearDropPreview();
+          state.draggedBlockId = null;
+          state.draggedSourceType = null;
         });
 
         workspaceList.appendChild(card);
@@ -1576,7 +1625,43 @@
         const rect = card.getBoundingClientRect();
         return event.clientY < rect.top + rect.height / 2;
       });
-      return nextCard ? cards.indexOf(nextCard) : state.blocks.length;
+      return nextCard ? state.blocks.findIndex(block => block.id === nextCard.dataset.id) : state.blocks.length;
+    }
+
+    function updateDropPreview(index) {
+      if (state.draggedBlockId) {
+        const fromIndex = state.blocks.findIndex(block => block.id === state.draggedBlockId);
+        if (index === fromIndex || index === fromIndex + 1) {
+          clearDropPreview();
+          return;
+        }
+      }
+
+      if (state.dragPreviewIndex === index && workspaceList.querySelector(".drop-placeholder")) return;
+
+      clearDropPreview();
+      state.dragPreviewIndex = index;
+
+      const placeholder = document.createElement("div");
+      placeholder.className = "drop-placeholder";
+      placeholder.setAttribute("aria-hidden", "true");
+
+      const cards = [...workspaceList.querySelectorAll(".workspace-card:not(.dragging)")];
+      const targetCard = cards.find(card => {
+        const cardIndex = state.blocks.findIndex(block => block.id === card.dataset.id);
+        return cardIndex >= index;
+      });
+
+      if (targetCard) {
+        workspaceList.insertBefore(placeholder, targetCard);
+      } else {
+        workspaceList.appendChild(placeholder);
+      }
+    }
+
+    function clearDropPreview() {
+      workspaceList.querySelector(".drop-placeholder")?.remove();
+      state.dragPreviewIndex = null;
     }
 
     function insertBlock(type, index) {
@@ -1698,6 +1783,7 @@ ${indent(body, 2)}
 
     function updateOutput() {
       htmlOutput.value = generateBodyHtml();
+      updateLineNumbers();
       clearGlobalCodeErrors();
       updateModeUi();
       preview.srcdoc = generateFullHtml();
@@ -1707,6 +1793,15 @@ ${indent(body, 2)}
     }
 
     function clearGlobalCodeErrors() {
+    }
+
+    function updateLineNumbers() {
+      const lineCount = htmlOutput.value.split("\n").length || 1;
+      htmlLineNumbers.textContent = Array.from({ length: lineCount }, (_, index) => index + 1).join("\n");
+    }
+
+    function syncLineNumberScroll() {
+      htmlLineNumbers.scrollTop = htmlOutput.scrollTop;
     }
 
     function updateModeUi() {
@@ -2594,18 +2689,21 @@ ${indent(body, 2)}
       event.preventDefault();
       workspaceDrop.classList.add("is-over");
       event.dataTransfer.dropEffect = state.draggedBlockId ? "move" : "copy";
+      updateDropPreview(getDropIndex(event));
     });
 
     workspaceDrop.addEventListener("dragleave", event => {
       if (!workspaceDrop.contains(event.relatedTarget)) {
         workspaceDrop.classList.remove("is-over");
+        clearDropPreview();
       }
     });
 
     workspaceDrop.addEventListener("drop", event => {
       event.preventDefault();
       workspaceDrop.classList.remove("is-over");
-      const index = getDropIndex(event);
+      const index = state.dragPreviewIndex ?? getDropIndex(event);
+      clearDropPreview();
 
       if (state.draggedBlockId) {
         moveBlock(state.draggedBlockId, index);
@@ -2675,6 +2773,7 @@ ${indent(body, 2)}
     previewSplitter.addEventListener("pointercancel", stopPreviewResize);
 
     htmlOutput.addEventListener("input", () => {
+      updateLineNumbers();
       preview.srcdoc = wrapBodyHtml(htmlOutput.value);
       clearTimeout(reverseTimer);
       reverseTimer = setTimeout(() => {
@@ -2693,10 +2792,13 @@ ${indent(body, 2)}
         clearGlobalCodeErrors();
         const formatted = formatHtmlSnippet(htmlOutput.value);
         htmlOutput.value = formatted;
+        updateLineNumbers();
         preview.srcdoc = wrapBodyHtml(formatted);
         syncWorkspaceFromHtml(formatted);
       });
     });
+
+    htmlOutput.addEventListener("scroll", syncLineNumberScroll);
 
     platformMode.addEventListener("change", event => {
       state.platformMode = event.target.value;
@@ -2811,6 +2913,7 @@ ${indent(body, 2)}
     renderToolbox();
     renderWorkspace();
     updateOutput();
+    syncLineNumberScroll();
   </script>
 </body>
 </html>
