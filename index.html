@@ -1,0 +1,2654 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scratch HTML Builder</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --ink: #1b2430;
+      --muted: #647286;
+      --line: #d9e0e8;
+      --blue: #2878d8;
+      --blue-dark: #195ca8;
+      --green: #179b62;
+      --orange: #e27a23;
+      --red: #c64848;
+      --shadow: 0 14px 34px rgba(32, 45, 64, 0.12);
+      --radius: 8px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    .app {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 20px;
+      background: #172032;
+      color: #fff;
+      border-bottom: 1px solid #0d1421;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .hamburger-button {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 8px;
+      background: #2f8cff;
+      cursor: pointer;
+      transition: transform 120ms ease, background 120ms ease;
+    }
+
+    .hamburger-button:hover {
+      background: #4b9cff;
+      transform: translateY(-1px);
+    }
+
+    .hamburger-lines,
+    .hamburger-lines::before,
+    .hamburger-lines::after {
+      display: block;
+      width: 18px;
+      height: 2px;
+      border-radius: 999px;
+      background: #fff;
+    }
+
+    .hamburger-lines {
+      position: relative;
+    }
+
+    .hamburger-lines::before,
+    .hamburger-lines::after {
+      content: "";
+      position: absolute;
+      left: 0;
+    }
+
+    .hamburger-lines::before {
+      top: -6px;
+    }
+
+    .hamburger-lines::after {
+      top: 6px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .subhead {
+      margin: 2px 0 0;
+      color: #c6d2e1;
+      font-size: 13px;
+    }
+
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .button {
+      border: 0;
+      border-radius: 7px;
+      padding: 9px 12px;
+      color: #fff;
+      background: var(--blue);
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform 120ms ease, background 120ms ease;
+    }
+
+    .button:hover {
+      background: var(--blue-dark);
+      transform: translateY(-1px);
+    }
+
+    .button.secondary {
+      color: #dbe7f5;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .button.secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(220px, 280px) minmax(320px, 1fr) minmax(320px, 44vw);
+      gap: 14px;
+      padding: 14px;
+      min-height: 0;
+    }
+
+    .panel {
+      min-height: 0;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 48px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfe;
+    }
+
+    .panel-title h2 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .preview-title {
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .mode-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .size-fields {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .size-field {
+      display: grid;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .size-field input {
+      width: 94px;
+      border: 1px solid #cbd6e3;
+      border-radius: 7px;
+      padding: 7px 9px;
+      color: var(--ink);
+      background: #fff;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .platform-factors {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px 12px;
+      width: 100%;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .platform-factors label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .platform-factors input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--blue);
+    }
+
+    .mode-controls select,
+    .platform-factors select {
+      min-width: 118px;
+      border: 1px solid #cbd6e3;
+      border-radius: 7px;
+      padding: 7px 28px 7px 9px;
+      color: var(--ink);
+      background: #fff;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .platform-factors select {
+      min-width: 92px;
+      padding: 5px 24px 5px 8px;
+      font-size: 12px;
+    }
+
+    .mode-controls select[hidden],
+    .platform-factors[hidden] {
+      display: none;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .toolbox,
+    .workspace,
+    .output {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .blocks {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      overflow: auto;
+    }
+
+    .toolbox-empty {
+      padding: 18px;
+      color: var(--muted);
+      text-align: center;
+      border: 2px dashed #cbd6e3;
+      border-radius: 8px;
+      background: #fbfcfe;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .block {
+      position: relative;
+      display: grid;
+      gap: 9px;
+      padding: 11px 12px 11px 18px;
+      color: #fff;
+      border-radius: 8px;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.18);
+    }
+
+    .block::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 18px;
+      width: 10px;
+      height: 20px;
+      border-radius: 0 999px 999px 0;
+      background: rgba(255, 255, 255, 0.32);
+    }
+
+    .block:active {
+      cursor: grabbing;
+    }
+
+    .block.heading { background: #2f7ed8; }
+    .block.paragraph { background: #179b62; }
+    .block.image { background: #e27a23; }
+    .block.button-link { background: #9b5bd8; }
+    .block.section { background: #d85d78; }
+    .block.ul-list { background: #455bb8; }
+    .block.ol-list { background: #4f63c9; }
+    .block.li-item { background: #6a7bd6; }
+    .block.line-break { background: #68748b; }
+    .block.text-input { background: #198b9b; }
+    .block.unsupported { background: #b04a4a; }
+    .block.html-error { background: #a63a3a; }
+
+    .block-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .toolbox .block-name {
+      justify-content: flex-start;
+      text-align: left;
+    }
+
+    .toolbox .block {
+      align-items: center;
+      min-height: 56px;
+      grid-template-columns: 1fr auto;
+    }
+
+    .info-button {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.16);
+      cursor: pointer;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .info-button:hover {
+      background: rgba(0, 0, 0, 0.28);
+    }
+
+    .info-button.is-active {
+      color: #172032;
+      background: #ffffff;
+      border-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.24);
+    }
+
+    .info-button.is-available {
+      color: #172032;
+      background: rgba(255, 255, 255, 0.82);
+      border-color: rgba(255, 255, 255, 0.92);
+    }
+
+    .info-button.is-active {
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.34);
+      transform: scale(1.06);
+    }
+
+    .library-list {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+      overflow: auto;
+      background: #f4f6f8;
+    }
+
+    .library-list .block {
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      min-height: 58px;
+    }
+
+    .heart-button {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.16);
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .heart-button:hover,
+    .heart-button.is-favorite {
+      color: #d9205c;
+      background: #fff;
+      border-color: #fff;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.48);
+      z-index: 20;
+    }
+
+    .modal-backdrop[hidden] {
+      display: none;
+    }
+
+    .modal {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      width: min(760px, 100%);
+      max-height: min(720px, 92vh);
+      overflow: hidden;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.32);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      color: #fff;
+      background: #172032;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .modal-close {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border: 0;
+      border-radius: 7px;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.14);
+      cursor: pointer;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .modal-body {
+      display: grid;
+      grid-template-rows: minmax(240px, 1fr);
+      min-height: 0;
+    }
+
+    .sample-preview {
+      min-height: 0;
+      border: 0;
+      background: #fff;
+    }
+
+
+    .block-fields {
+      display: grid;
+      gap: 8px;
+    }
+
+    .block label {
+      display: grid;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.86);
+    }
+
+    .block input,
+    .block textarea,
+    .block select {
+      width: 100%;
+      border: 0;
+      border-radius: 6px;
+      padding: 7px 8px;
+      color: #162033;
+      background: rgba(255, 255, 255, 0.94);
+      outline: none;
+    }
+
+    .block textarea {
+      min-height: 66px;
+      resize: vertical;
+    }
+
+    .inline-field {
+      display: grid;
+      gap: 4px;
+    }
+
+    .inline-field.no-label {
+      grid-template-columns: 1fr 30px;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .inline-field.no-label::after {
+      content: "";
+      width: 30px;
+      height: 1px;
+    }
+
+    .repeat-field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .repeat-field-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.86);
+    }
+
+    .repeat-rows {
+      display: grid;
+      gap: 7px;
+    }
+
+    .repeat-row {
+      display: grid;
+      grid-template-columns: 1fr 30px;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .repeat-row input {
+      min-width: 0;
+    }
+
+    .repeat-remove,
+    .repeat-add {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border: 0;
+      border-radius: 6px;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.18);
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .repeat-remove:hover,
+    .repeat-add:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .repeat-add {
+      justify-self: end;
+    }
+
+    .workspace-drop {
+      position: relative;
+      flex: 1;
+      min-height: 280px;
+      padding: 14px;
+      overflow: auto;
+      background:
+        linear-gradient(90deg, rgba(23, 32, 50, 0.045) 1px, transparent 1px),
+        linear-gradient(rgba(23, 32, 50, 0.045) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    .workspace-drop.is-over {
+      outline: 3px solid rgba(47, 140, 255, 0.28);
+      outline-offset: -6px;
+    }
+
+    .empty-state {
+      display: grid;
+      place-items: center;
+      min-height: 220px;
+      color: var(--muted);
+      text-align: center;
+      border: 2px dashed #cbd6e3;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.68);
+    }
+
+    .empty-state[hidden] {
+      display: none;
+    }
+
+    .workspace-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .workspace-card {
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.32);
+    }
+
+    .workspace-card.dragging {
+      opacity: 0.5;
+    }
+
+    .card-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .icon-button {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border: 0;
+      border-radius: 6px;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.18);
+      cursor: pointer;
+    }
+
+    .icon-button:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .preview-pane,
+    .code-pane {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .preview-pane {
+      display: grid;
+      grid-template-rows: minmax(120px, var(--preview-pane-height, 55%)) 8px minmax(120px, 1fr);
+      height: 100%;
+    }
+
+    .preview-stage {
+      display: grid;
+      place-items: stretch;
+      min-height: 0;
+      background: #fff;
+      overflow: auto;
+    }
+
+    .preview-stage.ios,
+    .preview-stage.android {
+      place-items: center;
+      padding: 18px;
+      background: #e8edf3;
+    }
+
+    .preview-stage.ios-textview {
+      background: #eef1f5;
+    }
+
+    .preview-stage.ios-label {
+      background: #f1f3f7;
+    }
+
+    .preview-stage.ios-swiftui {
+      background: #eef5ff;
+    }
+
+    .preview-stage.ios-safari {
+      background: #e8edf3;
+    }
+
+    .preview-stage.android-textview {
+      background: #edf2f0;
+    }
+
+    .preview-stage.android-compose {
+      background: #e9eef8;
+    }
+
+    .preview-stage.sized iframe {
+      width: min(var(--preview-width), 100%);
+      height: min(var(--preview-height), 100%);
+    }
+
+    .preview-stage.ios iframe,
+    .preview-stage.android iframe {
+      width: min(var(--preview-width, 390px), 100%);
+      height: min(var(--preview-height, 760px), 100%);
+      min-height: 260px;
+      border: 10px solid #172032;
+      box-shadow: 0 18px 42px rgba(23, 32, 50, 0.2);
+    }
+
+    .preview-stage.ios iframe {
+      border-radius: 30px;
+    }
+
+    .preview-stage.android iframe {
+      border-radius: 18px;
+    }
+
+    .preview-stage.ios-textview iframe {
+      border-color: #2d3442;
+      background: #f9fafc;
+    }
+
+    .preview-stage.ios-label iframe {
+      border-color: #303846;
+      background: #fbfbfd;
+    }
+
+    .preview-stage.ios-swiftui iframe {
+      border-color: #24415f;
+      background: #ffffff;
+    }
+
+    .preview-stage.ios-safari iframe {
+      border-color: #152033;
+      background: #ffffff;
+    }
+
+    .preview-stage.android-textview iframe {
+      border-color: #24352d;
+      background: #fbfdfc;
+    }
+
+    .preview-stage.android-compose iframe {
+      border-color: #26334f;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+    }
+
+    .splitter {
+      min-height: 8px;
+      background: #d7dee8;
+      cursor: row-resize;
+      position: relative;
+    }
+
+    .splitter::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 54px;
+      height: 3px;
+      border-radius: 999px;
+      background: #8b98aa;
+      transform: translate(-50%, -50%);
+    }
+
+    .splitter:hover,
+    .splitter.is-dragging {
+      background: #c5cfdd;
+    }
+
+    .code-wrap {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      height: 100%;
+      min-height: 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .code-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 12px;
+      background: #172032;
+      color: #dce7f5;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .copy-state {
+      color: #9dd9b8;
+      font-size: 12px;
+      min-width: 54px;
+      text-align: right;
+    }
+
+    textarea.code {
+      width: 100%;
+      height: 100%;
+      min-height: 180px;
+      border: 0;
+      padding: 14px;
+      resize: none;
+      outline: none;
+      color: #e8eff8;
+      background: #101827;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      tab-size: 2;
+    }
+
+    .code-error-panel {
+      display: grid;
+      gap: 6px;
+      padding: 12px 14px;
+      color: #ffe8e8;
+      background: #8f3030;
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .code-error-panel[hidden] {
+      display: none;
+    }
+
+    .code-error-title {
+      font-weight: 900;
+    }
+
+    .code-error-message {
+      margin: 0;
+      white-space: pre-wrap;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    .mini-button {
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 6px;
+      padding: 6px 9px;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .mini-button:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    @media (max-width: 1100px) {
+      main {
+        grid-template-columns: 240px minmax(320px, 1fr);
+      }
+
+      .output {
+        grid-column: 1 / -1;
+        min-height: 520px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .header-actions {
+        justify-content: flex-start;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbox,
+      .workspace,
+      .output {
+        min-height: 430px;
+      }
+
+      .preview-pane {
+        grid-template-rows: 280px 260px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <button class="hamburger-button" id="openBlockLibrary" type="button" aria-label="開啟積木庫">
+          <span class="hamburger-lines" aria-hidden="true"></span>
+        </button>
+        <div>
+          <h1>Scratch HTML Builder</h1>
+          <p class="subhead">拖曳積木、填入內容，即時產生 HTML 與預覽</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="button secondary" id="loadSample" type="button">載入範例</button>
+        <button class="button secondary" id="clearWorkspace" type="button">清空</button>
+        <button class="button" id="downloadHtml" type="button">下載完整 HTML</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel toolbox" aria-label="積木工具箱">
+        <div class="panel-title">
+          <h2>積木</h2>
+          <span class="hint">拖到中間</span>
+        </div>
+        <div class="blocks" id="toolbox"></div>
+      </section>
+
+      <section class="panel workspace" aria-label="編輯工作區">
+        <div class="panel-title">
+          <h2>工作區</h2>
+          <span class="hint">可拖曳排序</span>
+        </div>
+        <div class="workspace-drop" id="workspaceDrop">
+          <div class="empty-state" id="emptyState">把左邊的積木拖進來開始組頁面</div>
+          <div class="workspace-list" id="workspaceList"></div>
+        </div>
+      </section>
+
+      <section class="panel output" aria-label="預覽與 HTML 輸出">
+        <div class="panel-title preview-title">
+          <h2>預覽</h2>
+          <div class="mode-controls" aria-label="預覽模式">
+            <div class="size-fields" aria-label="預覽尺寸">
+              <label class="size-field">Size W
+                <input id="previewWidth" type="number" min="120" max="2000" step="1" placeholder="auto">
+              </label>
+              <label class="size-field">Size H
+                <input id="previewHeight" type="number" min="120" max="2000" step="1" placeholder="auto">
+              </label>
+            </div>
+            <select id="platformMode" aria-label="平台模式">
+              <option value="web">網頁</option>
+              <option value="ios">iOS</option>
+              <option value="android">Android</option>
+            </select>
+            <select id="iosMode" aria-label="iOS 模式" hidden>
+              <option value="wkwebview">iOS-WKWebView</option>
+              <option value="textview">iOS-UITextView attributedText</option>
+              <option value="label">iOS-UILabel attributedText</option>
+              <option value="swiftui-attributed">iOS-SwiftUI AttributedString</option>
+              <option value="safari">iOS-SafariViewController</option>
+            </select>
+            <div class="platform-factors" id="iosFactors" aria-label="iOS 顯示因素" hidden>
+              <label>Dynamic Type
+                <select id="iosFontScale" aria-label="iOS Dynamic Type">
+                  <option value="1">Default</option>
+                  <option value="1.12">Large</option>
+                  <option value="1.28">Extra Large</option>
+                  <option value="1.48">Accessibility</option>
+                </select>
+              </label>
+              <label><input id="iosDarkMode" type="checkbox">Dark Mode</label>
+              <label><input id="iosHideImages" type="checkbox">Image disabled</label>
+              <label><input id="iosDisableLinks" type="checkbox">Link disabled</label>
+              <label><input id="iosStrictAttributed" type="checkbox">Attributed strict</label>
+            </div>
+            <select id="androidMode" aria-label="Android 模式" hidden>
+              <option value="webview">Android-WebView</option>
+              <option value="textview">Android-TextView HtmlCompat</option>
+              <option value="compose-webview">Android-Compose AndroidView(WebView)</option>
+            </select>
+            <div class="platform-factors" id="androidFactors" aria-label="Android 顯示因素" hidden>
+              <label>Font Scale
+                <select id="androidFontScale" aria-label="Android Font Scale">
+                  <option value="1">1.0x</option>
+                  <option value="1.15">1.15x</option>
+                  <option value="1.3">1.3x</option>
+                  <option value="1.5">1.5x</option>
+                </select>
+              </label>
+              <label><input id="androidDarkMode" type="checkbox">Dark Mode</label>
+              <label><input id="androidHideImages" type="checkbox">Image disabled</label>
+              <label><input id="androidDisableLinks" type="checkbox">Link disabled</label>
+              <label><input id="androidStrictHtml" type="checkbox">HtmlCompat strict</label>
+            </div>
+          </div>
+        </div>
+        <div class="preview-pane">
+          <div class="preview-stage web" id="previewStage">
+            <iframe id="preview" title="HTML preview"></iframe>
+          </div>
+          <div class="splitter" id="previewSplitter" role="separator" aria-label="調整預覽與 HTML 高度" aria-orientation="horizontal"></div>
+          <div class="code-wrap">
+            <div class="code-toolbar">
+              <span id="codeLabel">HTML</span>
+              <div>
+                <button class="mini-button" id="copyHtml" type="button">複製</button>
+                <span class="copy-state" id="copyState"></span>
+              </div>
+            </div>
+            <textarea class="code" id="htmlOutput" spellcheck="false" aria-label="貼上或編輯 HTML" placeholder="貼上 HTML 片段，會自動反推工作區方塊"></textarea>
+            <div class="code-error-panel" id="codeErrorPanel" hidden>
+              <div class="code-error-title">HTML 語法錯誤</div>
+              <pre class="code-error-message" id="codeErrorMessage"></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="blockInfoModal" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="blockInfoTitle">
+      <div class="modal-header">
+        <h3 id="blockInfoTitle">積木效果</h3>
+        <button class="modal-close" id="blockInfoClose" type="button" aria-label="關閉">×</button>
+      </div>
+      <div class="modal-body">
+        <iframe class="sample-preview" id="blockInfoPreview" title="積木效果預覽"></iframe>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="blockLibraryModal" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="blockLibraryTitle">
+      <div class="modal-header">
+        <h3 id="blockLibraryTitle">積木庫</h3>
+        <button class="modal-close" id="blockLibraryClose" type="button" aria-label="關閉">×</button>
+      </div>
+      <div class="library-list" id="blockLibraryList"></div>
+    </section>
+  </div>
+
+  <script>
+    const blockTypes = [
+      {
+        type: "heading",
+        name: "標題",
+        icon: "H1",
+        fields: [
+          { key: "level", label: "層級", control: "select", options: ["h1", "h2", "h3"], value: "h1" },
+          { key: "text", label: "文字", control: "input", value: "我的網站標題" }
+        ],
+        toHtml: values => `<${values.level}>${escapeHtml(values.text)}</${values.level}>`
+      },
+      {
+        type: "paragraph",
+        name: "段落",
+        icon: "P",
+        fields: [
+          { key: "text", label: "內容", control: "textarea", value: "這是一段可以編輯的介紹文字。" }
+        ],
+        toHtml: values => `<p>${escapeHtml(values.text)}</p>`
+      },
+      {
+        type: "image",
+        name: "圖片",
+        icon: "IMG",
+        fields: [
+          { key: "src", label: "圖片網址", control: "input", value: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&auto=format&fit=crop" },
+          { key: "alt", label: "替代文字", control: "input", value: "工作桌上的電腦" }
+        ],
+        toHtml: values => `<img src="${escapeAttribute(values.src)}" alt="${escapeAttribute(values.alt)}">`
+      },
+      {
+        type: "button-link",
+        name: "連結按鈕",
+        icon: "BTN",
+        fields: [
+          { key: "text", label: "文字", control: "input", value: "了解更多" },
+          { key: "href", label: "網址", control: "input", value: "https://example.com" }
+        ],
+        toHtml: values => `<a class="button" href="${escapeAttribute(values.href)}">${escapeHtml(values.text)}</a>`
+      },
+      {
+        type: "section",
+        name: "區塊",
+        icon: "SEC",
+        fields: [
+          { key: "title", label: "標題", control: "input", value: "特色區塊" },
+          { key: "text", label: "內容", control: "textarea", value: "你可以用區塊快速建立一段有背景的內容。" }
+        ],
+        toHtml: values => `<section class="feature">\n  <h2>${escapeHtml(values.title)}</h2>\n  <p>${escapeHtml(values.text)}</p>\n</section>`
+      },
+      {
+        type: "ul-list",
+        name: "清單",
+        icon: "UL",
+        fields: [
+          { key: "items", label: "li 項目，每行一個", control: "textarea", repeatable: true, value: "第一個項目\n第二個項目\n第三個項目" }
+        ],
+        toHtml: values => {
+          const items = values.items
+            .split("\n")
+            .map(item => item.trim())
+            .filter(Boolean)
+            .map(item => `  <li>${escapeHtml(item)}</li>`)
+            .join("\n");
+          return `<ul>\n${items}\n</ul>`;
+        }
+      },
+      {
+        type: "ol-list",
+        name: "有序清單",
+        icon: "OL",
+        fields: [
+          {
+            key: "marker",
+            label: "",
+            placeholder: "1. 2. 3.",
+            control: "select",
+            options: [
+              { value: "1", label: "1. 2. 3." },
+              { value: "A", label: "A. B. C." },
+              { value: "a", label: "a. b. c." },
+              { value: "I", label: "I. II. III." },
+              { value: "i", label: "i. ii. iii." }
+            ],
+            value: "1"
+          },
+          { key: "items", label: "li 項目，每行一個", control: "textarea", repeatable: true, value: "" }
+        ],
+        toHtml: values => {
+          const items = values.items
+            .split("\n")
+            .map(item => item.trim())
+            .filter(Boolean)
+            .map(item => `  <li>${escapeHtml(item)}</li>`)
+            .join("\n");
+          const marker = values.marker && values.marker !== "1" ? ` type="${escapeAttribute(values.marker)}"` : "";
+          return `<ol${marker}>\n${items}\n</ol>`;
+        }
+      },
+      {
+        type: "li-item",
+        name: "項目",
+        icon: "LI",
+        fields: [
+          { key: "text", label: "內容", control: "input", value: "單一清單項目" }
+        ],
+        toHtml: values => `<li>${escapeHtml(values.text)}</li>`
+      },
+      {
+        type: "line-break",
+        name: "換行",
+        icon: "BR",
+        fields: [],
+        toHtml: () => "<br>"
+      },
+      {
+        type: "text-input",
+        name: "輸入欄位",
+        icon: "IN",
+        fields: [
+          { key: "label", label: "標籤", control: "input", value: "Email" },
+          { key: "placeholder", label: "提示文字", control: "input", value: "name@example.com" }
+        ],
+        toHtml: values => `<label>${escapeHtml(values.label)}\n  <input type="text" placeholder="${escapeAttribute(values.placeholder)}">\n</label>`
+      },
+      {
+        type: "unsupported",
+        name: "待新增積木",
+        icon: "!",
+        hiddenFromToolbox: true,
+        fields: [
+          { key: "tag", label: "建議新增的積木", control: "input", value: "unknown" },
+          { key: "html", label: "原始 HTML", control: "textarea", value: "" }
+        ],
+        toHtml: values => values.html
+      },
+      {
+        type: "html-error",
+        name: "HTML 語法錯誤",
+        icon: "!",
+        hiddenFromToolbox: true,
+        fields: [
+          { key: "message", label: "錯誤訊息", control: "textarea", value: "" },
+          { key: "html", label: "原始 HTML", control: "textarea", value: "" }
+        ],
+        toHtml: values => values.html
+      }
+    ];
+
+    const state = {
+      blocks: [],
+      draggedBlockId: null,
+      draggedSourceType: null,
+      platformMode: "web",
+      iosMode: "wkwebview",
+      iosFontScale: "1",
+      iosDarkMode: false,
+      iosHideImages: false,
+      iosDisableLinks: false,
+      iosStrictAttributed: false,
+      androidMode: "webview",
+      androidFontScale: "1",
+      androidDarkMode: false,
+      androidHideImages: false,
+      androidDisableLinks: false,
+      androidStrictHtml: false,
+      previewWidth: "",
+      previewHeight: ""
+    };
+
+    const toolbox = document.querySelector("#toolbox");
+    const workspaceDrop = document.querySelector("#workspaceDrop");
+    const workspaceList = document.querySelector("#workspaceList");
+    const emptyState = document.querySelector("#emptyState");
+    const htmlOutput = document.querySelector("#htmlOutput");
+    const preview = document.querySelector("#preview");
+    const previewPane = document.querySelector(".preview-pane");
+    const previewSplitter = document.querySelector("#previewSplitter");
+    const previewStage = document.querySelector("#previewStage");
+    const platformMode = document.querySelector("#platformMode");
+    const iosMode = document.querySelector("#iosMode");
+    const iosFactors = document.querySelector("#iosFactors");
+    const iosFontScale = document.querySelector("#iosFontScale");
+    const iosDarkMode = document.querySelector("#iosDarkMode");
+    const iosHideImages = document.querySelector("#iosHideImages");
+    const iosDisableLinks = document.querySelector("#iosDisableLinks");
+    const iosStrictAttributed = document.querySelector("#iosStrictAttributed");
+    const androidMode = document.querySelector("#androidMode");
+    const androidFactors = document.querySelector("#androidFactors");
+    const androidFontScale = document.querySelector("#androidFontScale");
+    const androidDarkMode = document.querySelector("#androidDarkMode");
+    const androidHideImages = document.querySelector("#androidHideImages");
+    const androidDisableLinks = document.querySelector("#androidDisableLinks");
+    const androidStrictHtml = document.querySelector("#androidStrictHtml");
+    const previewWidth = document.querySelector("#previewWidth");
+    const previewHeight = document.querySelector("#previewHeight");
+    const codeLabel = document.querySelector("#codeLabel");
+    const copyState = document.querySelector("#copyState");
+    const codeErrorPanel = document.querySelector("#codeErrorPanel");
+    const codeErrorMessage = document.querySelector("#codeErrorMessage");
+    const blockInfoModal = document.querySelector("#blockInfoModal");
+    const blockInfoTitle = document.querySelector("#blockInfoTitle");
+    const blockInfoPreview = document.querySelector("#blockInfoPreview");
+    const blockInfoClose = document.querySelector("#blockInfoClose");
+    const openBlockLibrary = document.querySelector("#openBlockLibrary");
+    const blockLibraryModal = document.querySelector("#blockLibraryModal");
+    const blockLibraryList = document.querySelector("#blockLibraryList");
+    const blockLibraryClose = document.querySelector("#blockLibraryClose");
+    const favoriteStorageKey = "scratch-html-builder-favorites";
+    let reverseTimer = null;
+    let isResizingPreview = false;
+    let favoriteBlockTypes = new Set(loadFavoriteBlockTypes());
+
+    function createBlock(type) {
+      const definition = blockTypes.find(block => block.type === type);
+      const values = {};
+      definition.fields.forEach(field => {
+        values[field.key] = field.control === "select" ? field.value : "";
+      });
+
+      return {
+        id: crypto.randomUUID(),
+        type,
+        values
+      };
+    }
+
+    function createBlockWithValues(type, values) {
+      const block = createBlock(type);
+      block.values = { ...block.values, ...values };
+      return block;
+    }
+
+    function getVisibleBlockTypes() {
+      return blockTypes.filter(definition => !definition.hiddenFromToolbox).map(definition => definition.type);
+    }
+
+    function loadFavoriteBlockTypes() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(favoriteStorageKey) || "null");
+        if (Array.isArray(saved)) return saved;
+      } catch {
+        localStorage.removeItem(favoriteStorageKey);
+      }
+
+      return getVisibleBlockTypes();
+    }
+
+    function saveFavoriteBlockTypes() {
+      localStorage.setItem(favoriteStorageKey, JSON.stringify([...favoriteBlockTypes]));
+    }
+
+    function renderToolbox() {
+      toolbox.innerHTML = "";
+      const favoriteDefinitions = blockTypes.filter(definition => !definition.hiddenFromToolbox && favoriteBlockTypes.has(definition.type));
+      if (!favoriteDefinitions.length) {
+        toolbox.innerHTML = `<div class="toolbox-empty">點左上漢堡，按愛心加入常用積木</div>`;
+        return;
+      }
+
+      favoriteDefinitions.forEach(definition => {
+        const node = document.createElement("article");
+        node.className = `block ${definition.type}`;
+        node.draggable = true;
+        node.dataset.type = definition.type;
+        node.innerHTML = `
+          <div class="block-name"><span>${definition.icon}</span><span>${definition.name}</span></div>
+          <button class="info-button" type="button" data-info-type="${definition.type}" aria-label="查看 ${definition.name} 效果" title="查看效果">i</button>
+        `;
+        node.addEventListener("dragstart", event => {
+          state.draggedSourceType = definition.type;
+          state.draggedBlockId = null;
+          event.dataTransfer.effectAllowed = "copy";
+          event.dataTransfer.setData("text/plain", definition.type);
+        });
+        node.addEventListener("click", () => {
+          insertBlock(definition.type, state.blocks.length);
+        });
+        node.querySelector(".info-button").addEventListener("click", event => {
+          event.stopPropagation();
+          showBlockInfo(definition);
+        });
+        toolbox.appendChild(node);
+      });
+    }
+
+    function renderBlockLibrary() {
+      blockLibraryList.innerHTML = "";
+      blockTypes.filter(definition => !definition.hiddenFromToolbox).forEach(definition => {
+        const node = document.createElement("article");
+        node.className = `block ${definition.type}`;
+        node.draggable = true;
+        node.dataset.type = definition.type;
+        const isFavorite = favoriteBlockTypes.has(definition.type);
+        node.innerHTML = `
+          <div class="block-name"><span>${definition.icon}</span><span>${definition.name}</span></div>
+          <button class="heart-button ${isFavorite ? "is-favorite" : ""}" type="button" data-heart-type="${definition.type}" aria-label="${isFavorite ? "從外層移除" : "加入外層"} ${definition.name}" title="${isFavorite ? "已在外層列表" : "加入外層列表"}">♥</button>
+          <button class="info-button" type="button" data-info-type="${definition.type}" aria-label="查看 ${definition.name} 效果" title="查看效果">i</button>
+        `;
+
+        node.addEventListener("dragstart", event => {
+          state.draggedSourceType = definition.type;
+          state.draggedBlockId = null;
+          event.dataTransfer.effectAllowed = "copy";
+          event.dataTransfer.setData("text/plain", definition.type);
+        });
+
+        node.addEventListener("click", () => {
+          insertBlock(definition.type, state.blocks.length);
+        });
+
+        node.querySelector(".heart-button").addEventListener("click", event => {
+          event.stopPropagation();
+          toggleFavoriteBlock(definition.type);
+        });
+
+        node.querySelector(".info-button").addEventListener("click", event => {
+          event.stopPropagation();
+          showBlockInfo(definition);
+        });
+
+        blockLibraryList.appendChild(node);
+      });
+    }
+
+    function toggleFavoriteBlock(type) {
+      if (favoriteBlockTypes.has(type)) {
+        favoriteBlockTypes.delete(type);
+      } else {
+        favoriteBlockTypes.add(type);
+      }
+
+      saveFavoriteBlockTypes();
+      renderToolbox();
+      renderBlockLibrary();
+    }
+
+    function showBlockLibrary() {
+      renderBlockLibrary();
+      blockLibraryModal.hidden = false;
+      blockLibraryClose.focus();
+    }
+
+    function hideBlockLibrary() {
+      blockLibraryModal.hidden = true;
+    }
+
+    function showBlockInfo(definition) {
+      setActiveInfoButton(definition.type);
+      const values = {};
+      definition.fields.forEach(field => {
+        values[field.key] = field.value;
+      });
+
+      const html = definition.toHtml(values);
+      blockInfoTitle.textContent = `${definition.icon} ${definition.name}`;
+      blockInfoPreview.srcdoc = wrapBodyHtml(html);
+      blockInfoModal.hidden = false;
+      blockInfoClose.focus();
+    }
+
+    function hideBlockInfo() {
+      blockInfoModal.hidden = true;
+      blockInfoPreview.srcdoc = "";
+      setActiveInfoButton(null);
+    }
+
+    function setActiveInfoButton(type) {
+      const isInfoMode = Boolean(type);
+      document.querySelectorAll(".info-button").forEach(button => {
+        button.classList.toggle("is-available", isInfoMode);
+        button.classList.toggle("is-active", button.dataset.infoType === type);
+      });
+    }
+
+    function renderWorkspace() {
+      workspaceList.innerHTML = "";
+      emptyState.hidden = state.blocks.length > 0;
+
+      state.blocks.forEach(block => {
+        const definition = blockTypes.find(item => item.type === block.type);
+        const card = document.createElement("article");
+        card.className = `block workspace-card ${definition.type}`;
+        card.draggable = true;
+        card.dataset.id = block.id;
+
+        const fields = definition.fields.map(field => renderField(field, block.values[field.key])).join("");
+        const note = getBlockNote(block.type);
+        card.innerHTML = `
+          <div class="card-actions">
+            <div class="block-name"><span>${definition.icon}</span><span>${definition.name}</span></div>
+            <button class="icon-button" type="button" title="刪除" aria-label="刪除">×</button>
+          </div>
+          ${note}
+          <div class="block-fields">${fields}</div>
+        `;
+
+        card.querySelector(".icon-button").addEventListener("click", () => {
+          state.blocks = state.blocks.filter(item => item.id !== block.id);
+          renderWorkspace();
+          updateOutput();
+        });
+
+        card.querySelectorAll("[data-field]:not([data-repeat-field])").forEach(input => {
+          input.addEventListener("input", event => {
+            block.values[event.target.dataset.field] = event.target.value;
+            updateOutput();
+          });
+        });
+
+        card.querySelectorAll("[data-repeat-field]").forEach(input => {
+          input.addEventListener("input", event => {
+            block.values[event.target.dataset.repeatField] = collectRepeatValues(card, event.target.dataset.repeatField);
+            updateOutput();
+          });
+        });
+
+        card.querySelectorAll("[data-repeat-add]").forEach(button => {
+          button.addEventListener("click", event => {
+            const field = event.currentTarget.dataset.repeatAdd;
+            block.values[field] = appendRepeatValue(block.values[field]);
+            renderWorkspace();
+            updateOutput();
+          });
+        });
+
+        card.querySelectorAll("[data-repeat-remove]").forEach(button => {
+          button.addEventListener("click", event => {
+            const field = event.currentTarget.dataset.repeatRemove;
+            const index = Number(event.currentTarget.dataset.repeatIndex);
+            const values = splitRepeatValues(block.values[field]);
+            values.splice(index, 1);
+            block.values[field] = values.length ? values.join("\n") : "";
+            renderWorkspace();
+            updateOutput();
+          });
+        });
+
+        card.addEventListener("dragstart", event => {
+          state.draggedBlockId = block.id;
+          state.draggedSourceType = null;
+          card.classList.add("dragging");
+          event.dataTransfer.effectAllowed = "move";
+          event.dataTransfer.setData("text/plain", block.id);
+        });
+
+        card.addEventListener("dragend", () => {
+          card.classList.remove("dragging");
+        });
+
+        workspaceList.appendChild(card);
+      });
+    }
+
+    function getBlockNote(type) {
+      if (type === "unsupported") {
+        return `<div class="hint" style="color: rgba(255,255,255,.86); white-space: normal;">目前沒有對應積木，可依這個標籤新增一種積木。</div>`;
+      }
+
+      if (type === "html-error") {
+        return `<div class="hint" style="color: rgba(255,255,255,.9); white-space: normal;">貼上的 HTML 有語法問題，請先修正標籤再反推方塊。</div>`;
+      }
+
+      return "";
+    }
+
+    function renderField(field, value) {
+      if (field.control === "textarea") {
+        if (!field.repeatable) {
+          return `
+            <label>${field.label}
+              <textarea data-field="${field.key}">${escapeHtml(value)}</textarea>
+            </label>
+          `;
+        }
+
+        const rows = splitRepeatValues(value);
+        return `
+          <div class="repeat-field">
+            <div class="repeat-field-label">${field.label}</div>
+            <div class="repeat-rows">
+              ${rows.map((row, index) => `
+                <div class="repeat-row">
+                  <input data-repeat-field="${field.key}" data-repeat-index="${index}" value="${escapeAttribute(row)}">
+                  <button class="repeat-remove" type="button" data-repeat-remove="${field.key}" data-repeat-index="${index}" title="刪除此列" aria-label="刪除此列">×</button>
+                </div>
+              `).join("")}
+            </div>
+            <button class="repeat-add" type="button" data-repeat-add="${field.key}" title="新增一列" aria-label="新增一列">+</button>
+          </div>
+        `;
+      }
+
+      if (field.control === "select") {
+        const options = field.options
+          .map(item => {
+            const option = typeof item === "string" ? { value: item, label: item } : item;
+            const label = field.placeholder && option.value === field.value ? field.placeholder : option.label;
+            return `<option value="${escapeAttribute(option.value)}" ${option.value === value ? "selected" : ""}>${escapeHtml(label)}</option>`;
+          })
+          .join("");
+        const labelText = field.label ? `${field.label}\n            ` : "";
+        const labelClass = field.label ? "inline-field" : "inline-field no-label";
+        return `
+          <label class="${labelClass}">${labelText}
+            <select data-field="${field.key}">${options}</select>
+          </label>
+        `;
+      }
+
+      return `
+        <label class="inline-field">${field.label}
+          <input data-field="${field.key}" value="${escapeAttribute(value)}">
+        </label>
+      `;
+    }
+
+    function splitRepeatValues(value) {
+      const rows = String(value || "").split("\n");
+      return rows.length ? rows : [""];
+    }
+
+    function appendRepeatValue(value) {
+      return [...splitRepeatValues(value), ""].join("\n");
+    }
+
+    function collectRepeatValues(card, field) {
+      return [...card.querySelectorAll(`[data-repeat-field="${field}"]`)]
+        .map(input => input.value)
+        .join("\n");
+    }
+
+    function getDropIndex(event) {
+      const cards = [...workspaceList.querySelectorAll(".workspace-card:not(.dragging)")];
+      const nextCard = cards.find(card => {
+        const rect = card.getBoundingClientRect();
+        return event.clientY < rect.top + rect.height / 2;
+      });
+      return nextCard ? cards.indexOf(nextCard) : state.blocks.length;
+    }
+
+    function insertBlock(type, index) {
+      state.blocks.splice(index, 0, createBlock(type));
+      renderWorkspace();
+      updateOutput();
+    }
+
+    function moveBlock(id, index) {
+      const fromIndex = state.blocks.findIndex(block => block.id === id);
+      if (fromIndex < 0) return;
+
+      const [block] = state.blocks.splice(fromIndex, 1);
+      const adjustedIndex = fromIndex < index ? index - 1 : index;
+      state.blocks.splice(adjustedIndex, 0, block);
+      renderWorkspace();
+      updateOutput();
+    }
+
+    function generateBodyHtml() {
+      return state.blocks.map(block => {
+        const definition = blockTypes.find(item => item.type === block.type);
+        return definition.toHtml(block.values);
+      }).join("\n");
+    }
+
+    function generateModeHtml() {
+      const html = generateBodyHtml();
+      if (state.platformMode === "ios" && state.iosMode === "textview") {
+        return toTextViewAttributeHtml(html, "textview");
+      }
+      if (state.platformMode === "ios" && state.iosMode === "label") {
+        return toTextViewAttributeHtml(html, "label");
+      }
+      if (state.platformMode === "ios" && state.iosMode === "swiftui-attributed") {
+        return toSwiftUIAttributedHtml(html);
+      }
+      if (state.platformMode === "android" && state.androidMode === "textview") {
+        return toAndroidTextViewHtml(html);
+      }
+      return html;
+    }
+
+    function generateFullHtml() {
+      const body = generateModeHtml();
+      return wrapBodyHtml(body);
+    }
+
+    function wrapBodyHtml(body) {
+      const css = getPreviewCss();
+      return `<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>我的 HTML 頁面</title>
+  <style>
+    body {
+${indent(css.body, 6)}
+    }
+
+    h1, h2, h3 {
+      line-height: 1.2;
+      margin: 0 0 16px;
+    }
+
+    p, ul, .feature, label {
+      margin: 0 0 20px;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      max-height: 360px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin: 0 0 22px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 10px 14px;
+      color: #fff;
+      background: #2878d8;
+      border-radius: 7px;
+      text-decoration: none;
+      font-weight: 700;
+      margin: 0 0 22px;
+    }
+
+    .feature {
+      padding: 20px;
+      background: #edf6f1;
+      border: 1px solid #cfe5d9;
+      border-radius: 8px;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      font-weight: 700;
+    }
+
+    input {
+      max-width: 360px;
+      padding: 10px 12px;
+      border: 1px solid #cbd6e3;
+      border-radius: 7px;
+    }
+
+${css.extra}
+  </style>
+</head>
+<body>
+${indent(body, 2)}
+</body>
+</html>`;
+    }
+
+    function updateOutput() {
+      htmlOutput.value = generateBodyHtml();
+      clearGlobalCodeErrors();
+      updateModeUi();
+      preview.srcdoc = generateFullHtml();
+    }
+
+    function showGlobalCodeErrors(errors) {
+      codeErrorMessage.textContent = errors.join("\n");
+      codeErrorPanel.hidden = false;
+    }
+
+    function clearGlobalCodeErrors() {
+      codeErrorPanel.hidden = true;
+      codeErrorMessage.textContent = "";
+    }
+
+    function updateModeUi() {
+      const isIos = state.platformMode === "ios";
+      const isAndroid = state.platformMode === "android";
+      iosMode.hidden = !isIos;
+      iosFactors.hidden = !isIos;
+      androidMode.hidden = !isAndroid;
+      androidFactors.hidden = !isAndroid;
+      platformMode.value = state.platformMode;
+      iosMode.value = state.iosMode;
+      iosFontScale.value = state.iosFontScale;
+      iosDarkMode.checked = state.iosDarkMode;
+      iosHideImages.checked = state.iosHideImages;
+      iosDisableLinks.checked = state.iosDisableLinks;
+      iosStrictAttributed.checked = state.iosStrictAttributed;
+      androidMode.value = state.androidMode;
+      androidFontScale.value = state.androidFontScale;
+      androidDarkMode.checked = state.androidDarkMode;
+      androidHideImages.checked = state.androidHideImages;
+      androidDisableLinks.checked = state.androidDisableLinks;
+      androidStrictHtml.checked = state.androidStrictHtml;
+      previewStage.className = `preview-stage ${state.platformMode}`;
+      previewWidth.value = state.previewWidth;
+      previewHeight.value = state.previewHeight;
+      previewStage.classList.toggle("sized", Boolean(state.previewWidth || state.previewHeight));
+
+      if (state.previewWidth) {
+        previewStage.style.setProperty("--preview-width", `${state.previewWidth}px`);
+      } else {
+        previewStage.style.removeProperty("--preview-width");
+      }
+
+      if (state.previewHeight) {
+        previewStage.style.setProperty("--preview-height", `${state.previewHeight}px`);
+      } else {
+        previewStage.style.removeProperty("--preview-height");
+      }
+
+      if (isIos && state.iosMode === "textview") {
+        previewStage.classList.add("ios-textview");
+        codeLabel.textContent = "HTML";
+        htmlOutput.placeholder = "貼上 UITextView attributedText HTML 片段，會自動反推工作區方塊";
+      } else if (isIos && state.iosMode === "label") {
+        previewStage.classList.add("ios-label");
+        codeLabel.textContent = "HTML";
+        htmlOutput.placeholder = "貼上 UILabel attributedText HTML 片段，會自動反推工作區方塊";
+      } else if (isIos && state.iosMode === "swiftui-attributed") {
+        previewStage.classList.add("ios-swiftui");
+        codeLabel.textContent = "HTML";
+        htmlOutput.placeholder = "貼上 SwiftUI AttributedString HTML 片段，會自動反推工作區方塊";
+      } else if (isIos && state.iosMode === "safari") {
+        previewStage.classList.add("ios-safari");
+        codeLabel.textContent = "HTML";
+        htmlOutput.placeholder = "貼上 SafariViewController HTML 片段，會自動反推工作區方塊";
+      } else if (isIos) {
+        codeLabel.textContent = "HTML";
+        htmlOutput.placeholder = "貼上 WKWebView HTML 片段，會自動反推工作區方塊";
+      } else if (isAndroid && state.androidMode === "textview") {
+        previewStage.classList.add("android-textview");
+        codeLabel.textContent = "HTML";
+        htmlOutput.placeholder = "貼上 TextView HtmlCompat HTML 片段，會自動反推工作區方塊";
+      } else if (isAndroid && state.androidMode === "compose-webview") {
+        previewStage.classList.add("android-compose");
+        codeLabel.textContent = "HTML";
+        htmlOutput.placeholder = "貼上 Compose WebView HTML 片段，會自動反推工作區方塊";
+      } else if (state.platformMode === "android") {
+        codeLabel.textContent = "HTML";
+        htmlOutput.placeholder = "貼上 Android WebView HTML 片段，會自動反推工作區方塊";
+      } else {
+        codeLabel.textContent = "HTML";
+        htmlOutput.placeholder = "貼上 HTML 片段，會自動反推工作區方塊";
+      }
+    }
+
+    function getPreviewCss() {
+      if (state.platformMode === "ios" && state.iosMode === "textview") {
+        const theme = getIosTheme("#f9fafc");
+        return {
+          body: [
+            "max-width: 100%;",
+            "margin: 0;",
+            "padding: 20px;",
+            `color: ${theme.color};`,
+            `background: ${theme.background};`,
+            "font-family: -apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif;",
+            `font-size: ${scaleIosFont(17)}px;`,
+            "line-height: 1.58;"
+          ].join("\n"),
+          extra: withIosFactors([
+            "    a { color: #0a84ff; }",
+            "    img { display: none; }",
+            "    .button { color: #0a84ff; background: transparent; padding: 0; margin: 0 0 20px; }",
+            "    .feature { background: transparent; border: 0; padding: 0; }"
+          ])
+        };
+      }
+
+      if (state.platformMode === "ios" && state.iosMode === "label") {
+        const theme = getIosTheme("#fbfbfd");
+        return {
+          body: [
+            "max-width: 100%;",
+            "margin: 0;",
+            "padding: 18px;",
+            `color: ${theme.color};`,
+            `background: ${theme.background};`,
+            "font-family: -apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif;",
+            `font-size: ${scaleIosFont(16)}px;`,
+            "line-height: 1.42;"
+          ].join("\n"),
+          extra: withIosFactors([
+            "    h1, h2, h3 { font-size: 18px; margin: 0 0 10px; }",
+            "    p, ul, .feature, label { margin: 0 0 10px; }",
+            "    a { color: #0a84ff; text-decoration: underline; }",
+            "    img, input { display: none; }",
+            "    .button { color: #0a84ff; background: transparent; padding: 0; }",
+            "    .feature { background: transparent; border: 0; padding: 0; }"
+          ])
+        };
+      }
+
+      if (state.platformMode === "ios" && state.iosMode === "swiftui-attributed") {
+        const theme = getIosTheme("#ffffff");
+        return {
+          body: [
+            "max-width: 100%;",
+            "margin: 0;",
+            "padding: 24px 20px;",
+            `color: ${theme.color};`,
+            `background: ${theme.background};`,
+            "font-family: -apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif;",
+            `font-size: ${scaleIosFont(17)}px;`,
+            "line-height: 1.55;"
+          ].join("\n"),
+          extra: withIosFactors([
+            "    a { color: #0a84ff; text-decoration: underline; }",
+            "    img, input { display: none; }",
+            "    .button { color: #0a84ff; background: transparent; padding: 0; }",
+            "    .feature { background: transparent; border: 0; padding: 0; }"
+          ])
+        };
+      }
+
+      if (state.platformMode === "ios" && state.iosMode === "safari") {
+        const theme = getIosTheme("#ffffff");
+        return {
+          body: [
+            "max-width: 100%;",
+            "margin: 0;",
+            "padding: 32px 22px;",
+            `color: ${theme.color};`,
+            `background: ${theme.background};`,
+            "font-family: -apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif;",
+            `font-size: ${scaleIosFont(17)}px;`,
+            "line-height: 1.65;"
+          ].join("\n"),
+          extra: withIosFactors(["    a { color: #0a84ff; }"])
+        };
+      }
+
+      if (state.platformMode === "ios") {
+        const theme = getIosTheme("#ffffff");
+        return {
+          body: [
+            "max-width: 100%;",
+            "margin: 0;",
+            "padding: 28px 20px;",
+            `color: ${theme.color};`,
+            `background: ${theme.background};`,
+            "font-family: -apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif;",
+            `font-size: ${scaleIosFont(17)}px;`,
+            "line-height: 1.65;"
+          ].join("\n"),
+          extra: withIosFactors(["    a { color: #0a84ff; }"])
+        };
+      }
+
+      if (state.platformMode === "android" && state.androidMode === "textview") {
+        const theme = getAndroidTheme();
+        return {
+          body: [
+            "max-width: 100%;",
+            "margin: 0;",
+            "padding: 22px 18px;",
+            `color: ${theme.color};`,
+            `background: ${theme.background};`,
+            "font-family: Roboto, Arial, sans-serif;",
+            `font-size: ${scaleAndroidFont(16)}px;`,
+            "line-height: 1.55;"
+          ].join("\n"),
+          extra: withAndroidFactors([
+            "    h1, h2, h3 { font-weight: 700; }",
+            "    a { color: #1a73e8; text-decoration: underline; }",
+            "    img, input { display: none; }",
+            "    .button { color: #1a73e8; background: transparent; padding: 0; }",
+            "    .feature { background: transparent; border: 0; padding: 0; }"
+          ])
+        };
+      }
+
+      if (state.platformMode === "android" && state.androidMode === "compose-webview") {
+        const theme = getAndroidTheme();
+        return {
+          body: [
+            "max-width: 100%;",
+            "margin: 0;",
+            "padding: 24px 18px;",
+            `color: ${theme.color};`,
+            `background: ${theme.background};`,
+            "font-family: Roboto, Arial, sans-serif;",
+            `font-size: ${scaleAndroidFont(16)}px;`,
+            "line-height: 1.62;"
+          ].join("\n"),
+          extra: withAndroidFactors(["    a { color: #2962ff; }"])
+        };
+      }
+
+      if (state.platformMode === "android") {
+        const theme = getAndroidTheme();
+        return {
+          body: [
+            "max-width: 100%;",
+            "margin: 0;",
+            "padding: 24px 18px;",
+            `color: ${theme.color};`,
+            `background: ${theme.background};`,
+            "font-family: Roboto, Arial, sans-serif;",
+            `font-size: ${scaleAndroidFont(16)}px;`,
+            "line-height: 1.6;"
+          ].join("\n"),
+          extra: withAndroidFactors(["    a { color: #1a73e8; }"])
+        };
+      }
+
+      return {
+        body: [
+          "max-width: 880px;",
+          "margin: 0 auto;",
+          "padding: 40px 24px;",
+          "color: #1b2430;",
+          "background: #ffffff;",
+          "font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;",
+          "line-height: 1.7;"
+        ].join("\n"),
+        extra: ""
+      };
+    }
+
+    function getAndroidTheme() {
+      return state.androidDarkMode
+        ? { background: "#121212", color: "#e8eaed" }
+        : { background: "#ffffff", color: "#202124" };
+    }
+
+    function getIosTheme(lightBackground) {
+      return state.iosDarkMode
+        ? { background: "#000000", color: "#f2f2f7" }
+        : { background: lightBackground, color: "#111827" };
+    }
+
+    function scaleIosFont(size) {
+      return Math.round(size * Number(state.iosFontScale) * 10) / 10;
+    }
+
+    function withIosFactors(lines) {
+      const extra = [...lines];
+      if (state.iosDarkMode) {
+        extra.push("    .feature { background: #1c1c1e; border-color: #38383a; }");
+        extra.push("    input { background: #1c1c1e; color: #f2f2f7; border-color: #48484a; }");
+      }
+      if (state.iosHideImages) {
+        extra.push("    img { display: none !important; }");
+      }
+      if (state.iosDisableLinks) {
+        extra.push("    a { color: inherit !important; text-decoration: none !important; pointer-events: none; }");
+      }
+      if (state.iosStrictAttributed) {
+        extra.push("    img, input { display: none !important; }");
+        extra.push("    .feature { background: transparent !important; border: 0 !important; padding: 0 !important; }");
+      }
+      return extra.join("\n");
+    }
+
+    function scaleAndroidFont(size) {
+      return Math.round(size * Number(state.androidFontScale) * 10) / 10;
+    }
+
+    function withAndroidFactors(lines) {
+      const extra = [...lines];
+      if (state.androidDarkMode) {
+        extra.push("    .feature { background: #1f2937; border-color: #374151; }");
+        extra.push("    input { background: #1f2937; color: #e8eaed; border-color: #4b5563; }");
+      }
+      if (state.androidHideImages) {
+        extra.push("    img { display: none !important; }");
+      }
+      if (state.androidDisableLinks) {
+        extra.push("    a { color: inherit !important; text-decoration: none !important; pointer-events: none; }");
+      }
+      return extra.join("\n");
+    }
+
+    function toTextViewAttributeHtml(html, mode = "textview") {
+      const parser = new DOMParser();
+      const parsed = parser.parseFromString(html, "text/html");
+      parsed.body.querySelectorAll("h1, h2, h3").forEach(node => {
+        const tagName = node.tagName.toLowerCase();
+        const baseSize = mode === "label" ? 18 : tagName === "h1" ? 24 : tagName === "h2" ? 21 : 18;
+        const size = scaleIosFont(baseSize);
+        const margin = mode === "label" ? "0 0 8px" : "0 0 12px";
+        node.setAttribute("style", `font-size: ${size}px; font-weight: 700; margin: ${margin};`);
+      });
+      parsed.body.querySelectorAll("p, li").forEach(node => {
+        const size = scaleIosFont(mode === "label" ? 16 : 17);
+        const lineHeight = mode === "label" ? 1.42 : 1.58;
+        node.setAttribute("style", `font-size: ${size}px; line-height: ${lineHeight}; margin: 0 0 10px;`);
+      });
+      parsed.body.querySelectorAll("ul").forEach(node => {
+        const margin = mode === "label" ? "0 0 10px" : "0 0 14px";
+        node.setAttribute("style", `margin: ${margin}; padding-left: 22px;`);
+      });
+      parsed.body.querySelectorAll("a").forEach(node => {
+        node.setAttribute("style", "color: #0a84ff; text-decoration: underline;");
+      });
+      parsed.body.querySelectorAll("section").forEach(node => {
+        node.setAttribute("style", "margin: 0 0 16px;");
+      });
+      if (state.iosDarkMode) {
+        parsed.body.querySelectorAll("p, li, h1, h2, h3").forEach(node => {
+          node.setAttribute("style", `${node.getAttribute("style") || ""} color: #f2f2f7;`);
+        });
+      }
+      if (state.iosDisableLinks) {
+        parsed.body.querySelectorAll("a").forEach(node => {
+          const span = parsed.createElement("span");
+          span.textContent = node.textContent;
+          node.replaceWith(span);
+        });
+      }
+      if (state.iosHideImages || state.iosStrictAttributed || mode === "label") {
+        parsed.body.querySelectorAll("img").forEach(node => node.remove());
+      }
+      parsed.body.querySelectorAll("input").forEach(node => node.remove());
+      if (state.iosStrictAttributed) {
+        parsed.body.querySelectorAll("section").forEach(section => {
+          const div = parsed.createElement("div");
+          div.innerHTML = section.innerHTML;
+          section.replaceWith(div);
+        });
+        parsed.body.querySelectorAll("[class]").forEach(node => node.removeAttribute("class"));
+      }
+      return parsed.body.innerHTML.trim();
+    }
+
+    function toSwiftUIAttributedHtml(html) {
+      const parser = new DOMParser();
+      const parsed = parser.parseFromString(html, "text/html");
+
+      parsed.body.querySelectorAll("section").forEach(section => {
+        const div = parsed.createElement("div");
+        div.innerHTML = section.innerHTML;
+        section.replaceWith(div);
+      });
+
+      parsed.body.querySelectorAll("a").forEach(node => {
+        node.removeAttribute("class");
+        node.setAttribute("style", "color: #0a84ff; text-decoration: underline;");
+      });
+
+      if (state.iosDisableLinks) {
+        parsed.body.querySelectorAll("a").forEach(node => {
+          const span = parsed.createElement("span");
+          span.textContent = node.textContent;
+          node.replaceWith(span);
+        });
+      }
+      if (state.iosHideImages || state.iosStrictAttributed) {
+        parsed.body.querySelectorAll("img").forEach(node => node.remove());
+      }
+      parsed.body.querySelectorAll("input").forEach(node => node.remove());
+      parsed.body.querySelectorAll("[class]").forEach(node => node.removeAttribute("class"));
+      if (state.iosStrictAttributed) {
+        parsed.body.querySelectorAll("[style]").forEach(node => {
+          if (node.tagName.toLowerCase() !== "a") {
+            node.removeAttribute("style");
+          }
+        });
+      }
+      return parsed.body.innerHTML.trim();
+    }
+
+    function toAndroidTextViewHtml(html) {
+      const parser = new DOMParser();
+      const parsed = parser.parseFromString(html, "text/html");
+
+      parsed.body.querySelectorAll("section").forEach(section => {
+        const div = parsed.createElement("div");
+        div.innerHTML = section.innerHTML;
+        section.replaceWith(div);
+      });
+
+      parsed.body.querySelectorAll("a").forEach(node => {
+        node.removeAttribute("class");
+      });
+
+      if (state.androidDisableLinks) {
+        parsed.body.querySelectorAll("a").forEach(node => {
+          const span = parsed.createElement("span");
+          span.textContent = node.textContent;
+          node.replaceWith(span);
+        });
+      }
+      if (state.androidHideImages || state.androidStrictHtml) {
+        parsed.body.querySelectorAll("img").forEach(node => node.remove());
+      }
+      parsed.body.querySelectorAll("input").forEach(node => node.remove());
+      parsed.body.querySelectorAll("[style], [class]").forEach(node => {
+        node.removeAttribute("style");
+        node.removeAttribute("class");
+      });
+      if (state.androidStrictHtml) {
+        parsed.body.querySelectorAll("table, iframe, video, audio, form, button").forEach(node => {
+          const fallback = parsed.createElement("p");
+          fallback.textContent = cleanText(node.textContent);
+          node.replaceWith(fallback);
+        });
+      }
+
+      return parsed.body.innerHTML.trim();
+    }
+
+    function formatHtmlSnippet(html) {
+      if (!html.trim()) return "";
+
+      const parser = new DOMParser();
+      const parsed = parser.parseFromString(html, "text/html");
+      return [...parsed.body.childNodes]
+        .map(node => formatNode(node, 0))
+        .filter(Boolean)
+        .join("\n");
+    }
+
+    function formatNode(node, depth) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        return node.textContent.trim() ? `${"  ".repeat(depth)}${node.textContent.trim()}` : "";
+      }
+
+      if (node.nodeType !== Node.ELEMENT_NODE) return "";
+
+      const tagName = node.tagName.toLowerCase();
+      const attrs = formatAttributes(node);
+      const openTag = `<${tagName}${attrs}>`;
+      const closeTag = `</${tagName}>`;
+      const padding = "  ".repeat(depth);
+
+      if (["br", "hr", "img", "input", "meta", "link"].includes(tagName)) {
+        return `${padding}${openTag}`;
+      }
+
+      if (isInlineOnly(node)) {
+        return `${padding}${openTag}${node.innerHTML.trim()}${closeTag}`;
+      }
+
+      const children = [...node.childNodes]
+        .map(child => formatNode(child, depth + 1))
+        .filter(Boolean)
+        .join("\n");
+
+      return children
+        ? `${padding}${openTag}\n${children}\n${padding}${closeTag}`
+        : `${padding}${openTag}${closeTag}`;
+    }
+
+    function formatAttributes(node) {
+      return [...node.attributes]
+        .map(attribute => ` ${attribute.name}="${escapeAttribute(attribute.value)}"`)
+        .join("");
+    }
+
+    function isInlineOnly(node) {
+      const blockTags = new Set(["address", "article", "aside", "blockquote", "div", "dl", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hr", "li", "main", "nav", "ol", "p", "pre", "section", "table", "ul"]);
+      return [...node.children].every(child => !blockTags.has(child.tagName.toLowerCase()));
+    }
+
+    function syncWorkspaceFromHtml(html) {
+      const errors = validateHtmlSyntax(html);
+      if (errors.length) {
+        showGlobalCodeErrors(errors);
+        preview.srcdoc = wrapBodyHtml(html);
+        return;
+      }
+
+      clearGlobalCodeErrors();
+      const blocks = parseBlocksFromHtml(html);
+      state.blocks = blocks;
+      renderWorkspace();
+      preview.srcdoc = wrapBodyHtml(htmlOutput.value);
+    }
+
+    function validateHtmlSyntax(html) {
+      const errors = [];
+      const stack = [];
+      const voidTags = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"]);
+      const tagPattern = /<!--[\s\S]*?-->|<!doctype[^>]*>|<\/?([a-zA-Z][\w:-]*)(?:\s[^<>]*)?>/gi;
+      let match;
+
+      while ((match = tagPattern.exec(html)) !== null) {
+        const token = match[0];
+        const tagName = match[1] ? match[1].toLowerCase() : "";
+        if (!tagName || token.startsWith("<!--") || token.toLowerCase().startsWith("<!doctype")) continue;
+
+        const isClosing = token.startsWith("</");
+        const isSelfClosing = token.endsWith("/>") || voidTags.has(tagName);
+
+        if (isClosing) {
+          const latest = stack.pop();
+          if (!latest) {
+            errors.push(`多了結尾標籤 </${tagName}>。`);
+            continue;
+          }
+
+          if (latest.tagName !== tagName) {
+            errors.push(`標籤沒有正確關閉：<${latest.tagName}> 需要先補 </${latest.tagName}>，目前遇到 </${tagName}>。`);
+            const matchingIndex = stack.map(item => item.tagName).lastIndexOf(tagName);
+            if (matchingIndex >= 0) {
+              stack.splice(matchingIndex, 1);
+            }
+          }
+          continue;
+        }
+
+        if (!isSelfClosing) {
+          stack.push({ tagName });
+        }
+      }
+
+      while (stack.length) {
+        const item = stack.pop();
+        errors.push(`缺少結尾標籤 </${item.tagName}>。`);
+      }
+
+      return errors;
+    }
+
+    function parseBlocksFromHtml(html) {
+      if (!html.trim()) return [];
+
+      const parser = new DOMParser();
+      const documentFromHtml = parser.parseFromString(html, "text/html");
+      const source = documentFromHtml.body;
+
+      return [...source.children].flatMap(element => blockFromElement(element)).filter(Boolean);
+    }
+
+    function blockFromElement(element) {
+      const tagName = element.tagName.toLowerCase();
+
+      if (["h1", "h2", "h3"].includes(tagName)) {
+        return createBlockWithValues("heading", {
+          level: tagName,
+          text: cleanText(element.textContent)
+        });
+      }
+
+      if (tagName === "p") {
+        return createBlockWithValues("paragraph", {
+          text: cleanText(element.textContent)
+        });
+      }
+
+      if (tagName === "img") {
+        return createBlockWithValues("image", {
+          src: element.getAttribute("src") || "",
+          alt: element.getAttribute("alt") || ""
+        });
+      }
+
+      if (tagName === "a") {
+        return createBlockWithValues("button-link", {
+          text: cleanText(element.textContent) || "連結",
+          href: element.getAttribute("href") || ""
+        });
+      }
+
+      if (tagName === "section") {
+        const title = element.querySelector("h1, h2, h3");
+        const paragraph = element.querySelector("p");
+        return createBlockWithValues("section", {
+          title: title ? cleanText(title.textContent) : "區塊",
+          text: paragraph ? cleanText(paragraph.textContent) : cleanText(element.textContent)
+        });
+      }
+
+      if (tagName === "ul" || tagName === "ol") {
+        const items = [...element.children]
+          .filter(child => child.tagName.toLowerCase() === "li")
+          .map(child => cleanText(child.textContent))
+          .filter(Boolean)
+          .join("\n");
+        return createBlockWithValues(tagName === "ol" ? "ol-list" : "ul-list", {
+          items,
+          marker: element.getAttribute("type") || "1"
+        });
+      }
+
+      if (tagName === "li") {
+        return createBlockWithValues("li-item", {
+          text: cleanText(element.textContent)
+        });
+      }
+
+      if (tagName === "br") {
+        return createBlockWithValues("line-break", {});
+      }
+
+      if (tagName === "label") {
+        const input = element.querySelector("input");
+        const labelText = cleanText([...element.childNodes]
+          .filter(node => node.nodeType === Node.TEXT_NODE)
+          .map(node => node.textContent)
+          .join(" "));
+
+        if (input) {
+          return createBlockWithValues("text-input", {
+            label: labelText || "欄位",
+            placeholder: input.getAttribute("placeholder") || ""
+          });
+        }
+      }
+
+      return createBlockWithValues("unsupported", {
+        tag: `<${tagName}> 積木`,
+        html: element.outerHTML
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replaceAll("\n", " ");
+    }
+
+    function cleanText(value) {
+      return String(value).replace(/\s+/g, " ").trim();
+    }
+
+    function indent(value, spaces) {
+      const padding = " ".repeat(spaces);
+      return value.split("\n").map(line => padding + line).join("\n");
+    }
+
+    function loadSample() {
+      state.blocks = [
+        createBlock("heading"),
+        createBlock("paragraph"),
+        createBlock("image"),
+        createBlock("section"),
+        createBlock("ul-list"),
+        createBlock("button-link")
+      ];
+      state.blocks[0].values.text = "拖曳式 HTML 頁面";
+      state.blocks[1].values.text = "用像 Scratch 一樣的方式，把內容積木組成可以直接使用的 HTML。";
+      state.blocks[2].values.src = "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&auto=format&fit=crop";
+      state.blocks[2].values.alt = "工作桌上的電腦";
+      state.blocks[3].values.title = "即時預覽";
+      state.blocks[3].values.text = "每次修改內容，右側畫面和 HTML 都會一起更新。";
+      state.blocks[4].values.items = "快速排版\n即時預覽\n輸出 HTML";
+      state.blocks[5].values.text = "了解更多";
+      state.blocks[5].values.href = "https://example.com";
+      renderWorkspace();
+      updateOutput();
+    }
+
+    workspaceDrop.addEventListener("dragover", event => {
+      event.preventDefault();
+      workspaceDrop.classList.add("is-over");
+      event.dataTransfer.dropEffect = state.draggedBlockId ? "move" : "copy";
+    });
+
+    workspaceDrop.addEventListener("dragleave", event => {
+      if (!workspaceDrop.contains(event.relatedTarget)) {
+        workspaceDrop.classList.remove("is-over");
+      }
+    });
+
+    workspaceDrop.addEventListener("drop", event => {
+      event.preventDefault();
+      workspaceDrop.classList.remove("is-over");
+      const index = getDropIndex(event);
+
+      if (state.draggedBlockId) {
+        moveBlock(state.draggedBlockId, index);
+      } else if (state.draggedSourceType) {
+        insertBlock(state.draggedSourceType, index);
+      }
+
+      state.draggedBlockId = null;
+      state.draggedSourceType = null;
+    });
+
+    blockInfoClose.addEventListener("click", hideBlockInfo);
+
+    blockInfoModal.addEventListener("click", event => {
+      if (event.target === blockInfoModal) {
+        hideBlockInfo();
+      }
+    });
+
+    openBlockLibrary.addEventListener("click", showBlockLibrary);
+
+    blockLibraryClose.addEventListener("click", hideBlockLibrary);
+
+    blockLibraryModal.addEventListener("click", event => {
+      if (event.target === blockLibraryModal) {
+        hideBlockLibrary();
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && !blockInfoModal.hidden) {
+        hideBlockInfo();
+      }
+      if (event.key === "Escape" && !blockLibraryModal.hidden) {
+        hideBlockLibrary();
+      }
+    });
+
+    previewSplitter.addEventListener("pointerdown", event => {
+      isResizingPreview = true;
+      previewSplitter.classList.add("is-dragging");
+      previewSplitter.setPointerCapture(event.pointerId);
+      event.preventDefault();
+    });
+
+    previewSplitter.addEventListener("pointermove", event => {
+      if (!isResizingPreview) return;
+
+      const rect = previewPane.getBoundingClientRect();
+      const topHeight = event.clientY - rect.top;
+      const minHeight = 120;
+      const maxHeight = rect.height - minHeight - previewSplitter.offsetHeight;
+      const nextHeight = Math.min(Math.max(topHeight, minHeight), maxHeight);
+      previewPane.style.setProperty("--preview-pane-height", `${nextHeight}px`);
+    });
+
+    function stopPreviewResize(event) {
+      if (!isResizingPreview) return;
+      isResizingPreview = false;
+      previewSplitter.classList.remove("is-dragging");
+      if (event.pointerId !== undefined && previewSplitter.hasPointerCapture(event.pointerId)) {
+        previewSplitter.releasePointerCapture(event.pointerId);
+      }
+    }
+
+    previewSplitter.addEventListener("pointerup", stopPreviewResize);
+    previewSplitter.addEventListener("pointercancel", stopPreviewResize);
+
+    htmlOutput.addEventListener("input", () => {
+      preview.srcdoc = wrapBodyHtml(htmlOutput.value);
+      clearTimeout(reverseTimer);
+      reverseTimer = setTimeout(() => {
+        syncWorkspaceFromHtml(htmlOutput.value);
+      }, 250);
+    });
+
+    htmlOutput.addEventListener("paste", () => {
+      setTimeout(() => {
+        const errors = validateHtmlSyntax(htmlOutput.value);
+        if (errors.length) {
+          showGlobalCodeErrors(errors);
+          preview.srcdoc = wrapBodyHtml(htmlOutput.value);
+          return;
+        }
+
+        clearGlobalCodeErrors();
+        const formatted = formatHtmlSnippet(htmlOutput.value);
+        htmlOutput.value = formatted;
+        preview.srcdoc = wrapBodyHtml(formatted);
+        syncWorkspaceFromHtml(formatted);
+      });
+    });
+
+    platformMode.addEventListener("change", event => {
+      state.platformMode = event.target.value;
+      if (state.platformMode !== "ios") {
+        state.iosMode = "wkwebview";
+      }
+      if (state.platformMode !== "android") {
+        state.androidMode = "webview";
+      }
+      updateOutput();
+    });
+
+    iosMode.addEventListener("change", event => {
+      state.iosMode = event.target.value;
+      updateOutput();
+    });
+
+    iosFontScale.addEventListener("change", event => {
+      state.iosFontScale = event.target.value;
+      updateOutput();
+    });
+
+    iosDarkMode.addEventListener("change", event => {
+      state.iosDarkMode = event.target.checked;
+      updateOutput();
+    });
+
+    iosHideImages.addEventListener("change", event => {
+      state.iosHideImages = event.target.checked;
+      updateOutput();
+    });
+
+    iosDisableLinks.addEventListener("change", event => {
+      state.iosDisableLinks = event.target.checked;
+      updateOutput();
+    });
+
+    iosStrictAttributed.addEventListener("change", event => {
+      state.iosStrictAttributed = event.target.checked;
+      updateOutput();
+    });
+
+    androidMode.addEventListener("change", event => {
+      state.androidMode = event.target.value;
+      updateOutput();
+    });
+
+    androidFontScale.addEventListener("change", event => {
+      state.androidFontScale = event.target.value;
+      updateOutput();
+    });
+
+    androidDarkMode.addEventListener("change", event => {
+      state.androidDarkMode = event.target.checked;
+      updateOutput();
+    });
+
+    androidHideImages.addEventListener("change", event => {
+      state.androidHideImages = event.target.checked;
+      updateOutput();
+    });
+
+    androidDisableLinks.addEventListener("change", event => {
+      state.androidDisableLinks = event.target.checked;
+      updateOutput();
+    });
+
+    androidStrictHtml.addEventListener("change", event => {
+      state.androidStrictHtml = event.target.checked;
+      updateOutput();
+    });
+
+    previewWidth.addEventListener("input", event => {
+      state.previewWidth = event.target.value;
+      updateModeUi();
+    });
+
+    previewHeight.addEventListener("input", event => {
+      state.previewHeight = event.target.value;
+      updateModeUi();
+    });
+
+    document.querySelector("#copyHtml").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(htmlOutput.value);
+      } catch {
+        htmlOutput.focus();
+        htmlOutput.select();
+        document.execCommand("copy");
+      }
+      copyState.textContent = "已複製";
+      setTimeout(() => copyState.textContent = "", 1400);
+    });
+
+    document.querySelector("#downloadHtml").addEventListener("click", () => {
+      const blob = new Blob([generateFullHtml()], { type: "text/html" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "scratch-html-page.html";
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+
+    document.querySelector("#clearWorkspace").addEventListener("click", () => {
+      state.blocks = [];
+      renderWorkspace();
+      updateOutput();
+    });
+
+    document.querySelector("#loadSample").addEventListener("click", loadSample);
+
+    renderToolbox();
+    renderWorkspace();
+    updateOutput();
+  </script>
+</body>
+</html>
