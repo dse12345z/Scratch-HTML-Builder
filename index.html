@@ -340,10 +340,12 @@
     .block.paragraph { background: #179b62; }
     .block.image { background: #e27a23; }
     .block.button-link { background: #9b5bd8; }
+    .block.text-link { background: #7c4dcc; }
     .block.section { background: #d85d78; }
     .block.ul-list { background: #455bb8; }
     .block.ol-list { background: #4f63c9; }
     .block.li-item { background: #6a7bd6; }
+    .block.li-link-item { background: #5d72cf; }
     .block.line-break { background: #68748b; }
     .block.text-input { background: #198b9b; }
     .block.unsupported { background: #b04a4a; }
@@ -1093,9 +1095,19 @@
         name: "段落",
         icon: "P",
         fields: [
-          { key: "text", label: "內容", control: "textarea", value: "這是一段可以編輯的介紹文字。" }
+          { key: "text", label: "內容", control: "textarea", value: "這是一段可以編輯的介紹文字。" },
+          {
+            key: "style",
+            label: "Style",
+            control: "select",
+            options: [
+              { value: "", label: "無" },
+              { value: "margin: 0;", label: "margin: 0;" }
+            ],
+            value: ""
+          }
         ],
-        toHtml: values => `<p>${escapeHtml(values.text)}</p>`
+        toHtml: values => `<p${attributeIfPresent("style", values.style)}>${inlineContentHtml(values.text)}</p>`
       },
       {
         type: "image",
@@ -1118,6 +1130,16 @@
         toHtml: values => `<a class="button" href="${escapeAttribute(values.href)}">${escapeHtml(values.text)}</a>`
       },
       {
+        type: "text-link",
+        name: "文字連結",
+        icon: "A",
+        fields: [
+          { key: "text", label: "連結文字", control: "input", value: "樹享券官網" },
+          { key: "href", label: "連結網址", control: "input", value: "\\(PathDefinition.statementCreditCoupon)" }
+        ],
+        toHtml: values => `<a href="${escapeAttribute(values.href)}">${escapeHtml(values.text)}</a>`
+      },
+      {
         type: "section",
         name: "區塊",
         icon: "SEC",
@@ -1125,7 +1147,7 @@
           { key: "title", label: "標題", control: "input", value: "特色區塊" },
           { key: "text", label: "內容", control: "textarea", value: "你可以用區塊快速建立一段有背景的內容。" }
         ],
-        toHtml: values => `<section class="feature">\n  <h2>${escapeHtml(values.title)}</h2>\n  <p>${escapeHtml(values.text)}</p>\n</section>`
+        toHtml: values => `<section class="feature">\n  <h2>${escapeHtml(values.title)}</h2>\n  <p>${inlineContentHtml(values.text)}</p>\n</section>`
       },
       {
         type: "ul-list",
@@ -1139,7 +1161,7 @@
             .split("\n")
             .map(item => item.trim())
             .filter(Boolean)
-            .map(item => `  <li>${escapeHtml(item)}</li>`)
+            .map(item => `  <li>${inlineContentHtml(item)}</li>`)
             .join("\n");
           return `<ul>\n${items}\n</ul>`;
         }
@@ -1170,7 +1192,7 @@
             .split("\n")
             .map(item => item.trim())
             .filter(Boolean)
-            .map(item => `  <li>${escapeHtml(item)}</li>`)
+            .map(item => `  <li>${inlineContentHtml(item)}</li>`)
             .join("\n");
           const marker = values.marker && values.marker !== "1" ? ` type="${escapeAttribute(values.marker)}"` : "";
           return `<ol${marker}>\n${items}\n</ol>`;
@@ -1183,7 +1205,19 @@
         fields: [
           { key: "text", label: "內容", control: "input", value: "單一清單項目" }
         ],
-        toHtml: values => `<li>${escapeHtml(values.text)}</li>`
+        toHtml: values => `<li>${inlineContentHtml(values.text)}</li>`
+      },
+      {
+        type: "li-link-item",
+        name: "連結項目",
+        icon: "LI+A",
+        fields: [
+          { key: "before", label: "前文字", control: "textarea", value: "其餘樹享券活動規則，請詳" },
+          { key: "linkText", label: "連結文字", control: "input", value: "樹享券官網" },
+          { key: "href", label: "連結網址", control: "input", value: "\\(PathDefinition.statementCreditCoupon)" },
+          { key: "after", label: "後文字", control: "input", value: "。" }
+        ],
+        toHtml: values => `<li>${inlineContentHtml(values.before)}<a href="${escapeAttribute(values.href)}">${escapeHtml(values.linkText)}</a>${inlineContentHtml(values.after)}</li>`
       },
       {
         type: "line-break",
@@ -1599,7 +1633,7 @@
 
       return `
         <label class="inline-field">${field.label}
-          <input data-field="${field.key}" value="${escapeAttribute(value)}">
+          <input data-field="${field.key}" value="${escapeAttribute(value)}" ${field.placeholder ? `placeholder="${escapeAttribute(field.placeholder)}"` : ""}>
         </label>
       `;
     }
@@ -2571,7 +2605,8 @@ ${indent(body, 2)}
 
       if (tagName === "p") {
         return createBlockWithValues("paragraph", {
-          text: cleanText(element.textContent)
+          text: getInlineContentValue(element),
+          style: element.getAttribute("style") || ""
         });
       }
 
@@ -2583,7 +2618,7 @@ ${indent(body, 2)}
       }
 
       if (tagName === "a") {
-        return createBlockWithValues("button-link", {
+        return createBlockWithValues(element.classList.contains("button") ? "button-link" : "text-link", {
           text: cleanText(element.textContent) || "連結",
           href: element.getAttribute("href") || ""
         });
@@ -2594,14 +2629,14 @@ ${indent(body, 2)}
         const paragraph = element.querySelector("p");
         return createBlockWithValues("section", {
           title: title ? cleanText(title.textContent) : "區塊",
-          text: paragraph ? cleanText(paragraph.textContent) : cleanText(element.textContent)
+          text: paragraph ? getInlineContentValue(paragraph) : cleanText(element.textContent)
         });
       }
 
       if (tagName === "ul" || tagName === "ol") {
         const items = [...element.children]
           .filter(child => child.tagName.toLowerCase() === "li")
-          .map(child => cleanText(child.textContent))
+          .map(child => getInlineContentValue(child))
           .filter(Boolean)
           .join("\n");
         return createBlockWithValues(tagName === "ol" ? "ol-list" : "ul-list", {
@@ -2611,8 +2646,11 @@ ${indent(body, 2)}
       }
 
       if (tagName === "li") {
+        const linkedListItemBlock = createLinkedListItemBlock(element);
+        if (linkedListItemBlock) return linkedListItemBlock;
+
         return createBlockWithValues("li-item", {
-          text: cleanText(element.textContent)
+          text: getInlineContentValue(element)
         });
       }
 
@@ -2652,6 +2690,46 @@ ${indent(body, 2)}
 
     function escapeAttribute(value) {
       return escapeHtml(value).replaceAll("\n", " ");
+    }
+
+    function attributeIfPresent(name, value) {
+      const trimmedValue = String(value || "").trim();
+      return trimmedValue ? ` ${name}="${escapeAttribute(trimmedValue)}"` : "";
+    }
+
+    function inlineContentHtml(value) {
+      const rawValue = String(value || "");
+      if (!rawValue.trim()) return "";
+      return hasOnlyInlineHtmlTags(rawValue) ? rawValue : escapeHtml(rawValue);
+    }
+
+    function hasOnlyInlineHtmlTags(value) {
+      const allowedTags = new Set(["a", "abbr", "b", "br", "code", "em", "i", "small", "span", "strong", "sub", "sup", "u"]);
+      const tagPattern = /<\/?\s*([a-zA-Z][\w:-]*)(?:\s[^<>]*)?>/g;
+      const matches = [...String(value).matchAll(tagPattern)];
+      return matches.length > 0 && matches.every(match => allowedTags.has(match[1].toLowerCase()));
+    }
+
+    function getInlineContentValue(element) {
+      return element.children.length ? element.innerHTML.trim() : cleanText(element.textContent);
+    }
+
+    function createLinkedListItemBlock(element) {
+      const links = [...element.querySelectorAll("a")];
+      if (links.length !== 1) return null;
+
+      const link = links[0];
+      const innerHtml = element.innerHTML.trim();
+      const linkHtml = link.outerHTML;
+      const linkIndex = innerHtml.indexOf(linkHtml);
+      if (linkIndex < 0) return null;
+
+      return createBlockWithValues("li-link-item", {
+        before: innerHtml.slice(0, linkIndex),
+        linkText: cleanText(link.textContent) || "連結",
+        href: link.getAttribute("href") || "",
+        after: innerHtml.slice(linkIndex + linkHtml.length)
+      });
     }
 
     function cleanText(value) {
