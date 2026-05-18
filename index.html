@@ -3,2995 +3,1342 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Scratch HTML Builder</title>
+  <title>跟著學：AI Agent Skills x SDD</title>
   <style>
     :root {
       color-scheme: light;
-      --bg: #f4f6f8;
-      --panel: #ffffff;
-      --ink: #1b2430;
-      --muted: #647286;
-      --line: #d9e0e8;
-      --blue: #2878d8;
-      --blue-dark: #195ca8;
-      --green: #179b62;
-      --orange: #e27a23;
-      --red: #c64848;
-      --shadow: 0 14px 34px rgba(32, 45, 64, 0.12);
+      --bg: #f5f2ea;
+      --paper: #fffefa;
+      --paper-2: #f9f5ec;
+      --ink: #1f252b;
+      --muted: #646b73;
+      --line: #ded7ca;
+      --teal: #0b7b73;
+      --teal-dark: #075b55;
+      --coral: #cf5d44;
+      --blue: #315f9f;
+      --gold: #aa741b;
+      --plum: #674a75;
+      --ok: #18794e;
+      --bad: #b94036;
+      --shadow: 0 16px 38px rgba(36, 31, 22, 0.1);
       --radius: 8px;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
-      min-height: 100vh;
       background: var(--bg);
       color: var(--ink);
+      line-height: 1.65;
     }
 
     button,
-    input,
-    textarea,
-    select {
+    textarea {
       font: inherit;
     }
 
+    button {
+      cursor: pointer;
+    }
+
+    code,
+    pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
     .app {
-      display: grid;
-      grid-template-rows: auto 1fr;
       min-height: 100vh;
     }
 
-    header {
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      padding: 16px 20px;
-      background: #172032;
-      color: #fff;
-      border-bottom: 1px solid #0d1421;
+      padding: 13px 22px;
+      background: rgba(255, 254, 250, 0.94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
-      min-width: 0;
+      gap: 10px;
+      font-weight: 950;
     }
 
-    .hamburger-button {
+    .brand-mark {
       display: grid;
       place-items: center;
-      width: 36px;
-      height: 36px;
-      border: 0;
-      border-radius: 8px;
-      background: #2f8cff;
-      cursor: pointer;
-      transition: transform 120ms ease, background 120ms ease;
-    }
-
-    .hamburger-button:hover {
-      background: #4b9cff;
-      transform: translateY(-1px);
-    }
-
-    .hamburger-lines,
-    .hamburger-lines::before,
-    .hamburger-lines::after {
-      display: block;
-      width: 18px;
-      height: 2px;
-      border-radius: 999px;
-      background: #fff;
-    }
-
-    .hamburger-lines {
-      position: relative;
-    }
-
-    .hamburger-lines::before,
-    .hamburger-lines::after {
-      content: "";
-      position: absolute;
-      left: 0;
-    }
-
-    .hamburger-lines::before {
-      top: -6px;
-    }
-
-    .hamburger-lines::after {
-      top: 6px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 18px;
-      line-height: 1.2;
-    }
-
-    .subhead {
-      margin: 2px 0 0;
-      color: #c6d2e1;
-      font-size: 13px;
-    }
-
-    .header-actions {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-
-    .button {
-      border: 0;
-      border-radius: 7px;
-      padding: 9px 12px;
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius);
       color: #fff;
-      background: var(--blue);
-      cursor: pointer;
-      font-weight: 700;
-      transition: transform 120ms ease, background 120ms ease;
+      background: var(--teal);
     }
 
-    .button:hover {
-      background: var(--blue-dark);
-      transform: translateY(-1px);
+    .icon {
+      display: inline-grid;
+      place-items: center;
     }
 
-    .button.secondary {
-      color: #dbe7f5;
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.18);
+    .icon svg,
+    .brand-mark svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
-    .button.secondary:hover {
-      background: rgba(255, 255, 255, 0.2);
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: min(430px, 42vw);
     }
 
-    main {
+    .progress-label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .progress-track {
+      overflow: hidden;
+      flex: 1;
+      height: 8px;
+      border-radius: 999px;
+      background: #e4ddd0;
+    }
+
+    .progress-bar {
+      width: 16%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--teal);
+      transition: width 180ms ease;
+    }
+
+    .layout {
       display: grid;
-      grid-template-columns: minmax(220px, 280px) minmax(320px, 1fr) minmax(320px, 44vw);
-      gap: 14px;
-      padding: 14px;
-      min-height: 0;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 22px;
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 22px;
     }
 
-    .panel {
-      min-height: 0;
-      background: var(--panel);
+    .sidebar {
+      position: sticky;
+      top: 86px;
+      align-self: start;
       border: 1px solid var(--line);
       border-radius: var(--radius);
+      background: var(--paper);
       box-shadow: var(--shadow);
       overflow: hidden;
     }
 
-    .panel-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      min-height: 48px;
-      padding: 12px 14px;
+    .sidebar-head {
+      padding: 16px;
       border-bottom: 1px solid var(--line);
-      background: #fbfcfe;
+      background: #183331;
+      color: #fff;
     }
 
-    .panel-title h2 {
-      margin: 0;
-      font-size: 15px;
+    .sidebar-head strong {
+      display: block;
+      font-size: 18px;
     }
 
-    .preview-title {
-      align-items: flex-start;
-      flex-wrap: wrap;
+    .sidebar-head span {
+      color: #c9ded8;
+      font-size: 13px;
     }
 
-    .mode-controls {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-
-    .size-fields {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 8px;
-      width: 100%;
-    }
-
-    .size-field {
+    .lesson-nav {
       display: grid;
-      gap: 4px;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
+      padding: 8px;
     }
 
-    .size-field input {
-      width: 94px;
-      border: 1px solid #cbd6e3;
+    .lesson-tab {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 9px;
+      align-items: center;
+      border: 0;
       border-radius: 7px;
-      padding: 7px 9px;
+      padding: 10px;
+      background: transparent;
       color: var(--ink);
-      background: #fff;
-      font-weight: 700;
-      outline: none;
+      text-align: left;
     }
 
-    .platform-factors {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 8px 12px;
-      width: 100%;
+    .lesson-tab:hover {
+      background: #edf5f1;
+    }
+
+    .lesson-tab.active {
+      background: #dff0eb;
+      color: var(--teal-dark);
+    }
+
+    .tab-num {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      color: #fff;
+      background: var(--teal);
+      font-weight: 950;
+    }
+
+    .lesson-tab:nth-child(2) .tab-num {
+      background: var(--coral);
+    }
+
+    .lesson-tab:nth-child(3) .tab-num {
+      background: var(--blue);
+    }
+
+    .lesson-tab:nth-child(4) .tab-num {
+      background: var(--plum);
+    }
+
+    .lesson-tab:nth-child(5) .tab-num {
+      background: var(--gold);
+    }
+
+    .tab-text {
+      min-width: 0;
+      font-weight: 850;
+      line-height: 1.25;
+    }
+
+    .tab-text span {
+      display: block;
       color: var(--muted);
       font-size: 12px;
-      font-weight: 800;
+      font-weight: 700;
     }
 
-    .platform-factors label {
+    .content {
+      display: grid;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .hero-main,
+    .status-card,
+    .lesson-panel,
+    .checkpoint,
+    .prompt-lab {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      padding: 28px;
+    }
+
+    .eyebrow {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      white-space: nowrap;
+      gap: 8px;
+      margin: 0 0 12px;
+      color: var(--teal-dark);
+      font-size: 14px;
+      font-weight: 900;
     }
 
-    .platform-factors input[type="checkbox"] {
-      width: 15px;
-      height: 15px;
-      accent-color: var(--blue);
+    .eyebrow::before {
+      content: "";
+      width: 28px;
+      height: 2px;
+      background: var(--coral);
     }
 
-    .mode-controls select,
-    .platform-factors select {
-      min-width: 118px;
-      border: 1px solid #cbd6e3;
+    h1 {
+      margin: 0;
+      max-width: 820px;
+      font-size: clamp(36px, 5.4vw, 68px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .hero-main p {
+      max-width: 780px;
+      margin: 18px 0 0;
+      color: #444b53;
+      font-size: 18px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      border: 0;
       border-radius: 7px;
-      padding: 7px 28px 7px 9px;
+      padding: 9px 14px;
+      color: #fff;
+      background: var(--teal);
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn.secondary {
       color: var(--ink);
       background: #fff;
-      font-weight: 700;
-      outline: none;
+      border: 1px solid var(--line);
     }
 
-    .platform-factors select {
-      min-width: 92px;
-      padding: 5px 24px 5px 8px;
-      font-size: 12px;
+    .btn.ghost {
+      color: var(--teal-dark);
+      background: #e6f2ee;
+      box-shadow: none;
     }
 
-    .mode-controls select[hidden],
-    .platform-factors[hidden] {
+    .status-card {
+      display: grid;
+      align-content: space-between;
+      min-height: 100%;
+      overflow: hidden;
+    }
+
+    .status-head {
+      padding: 18px;
+      background: #183331;
+      color: #fff;
+    }
+
+    .status-head strong {
+      display: block;
+      font-size: 20px;
+    }
+
+    .status-head span {
+      color: #c9ded8;
+    }
+
+    .status-list {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+    }
+
+    .status-row {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      color: #3f464d;
+      font-size: 14px;
+    }
+
+    .check-dot {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--teal);
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .lesson-panel {
       display: none;
+      overflow: hidden;
+    }
+
+    .lesson-panel.active {
+      display: block;
+    }
+
+    .lesson-head {
+      display: grid;
+      grid-template-columns: 70px minmax(0, 1fr);
+      gap: 16px;
+      align-items: center;
+      padding: 20px;
+      border-bottom: 1px solid var(--line);
+      background: var(--paper-2);
+    }
+
+    .lesson-badge {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      border-radius: var(--radius);
+      color: #fff;
+      background: var(--teal);
+      font-size: 28px;
+      font-weight: 950;
+    }
+
+    .lesson-panel[data-lesson="2"] .lesson-badge {
+      background: var(--coral);
+    }
+
+    .lesson-panel[data-lesson="3"] .lesson-badge {
+      background: var(--blue);
+    }
+
+    .lesson-panel[data-lesson="4"] .lesson-badge {
+      background: var(--plum);
+    }
+
+    .lesson-panel[data-lesson="5"] .lesson-badge {
+      background: var(--gold);
+    }
+
+    .lesson-title h2 {
+      margin: 0;
+      font-size: clamp(28px, 3.5vw, 42px);
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .lesson-title p {
+      margin: 6px 0 0;
+      color: var(--muted);
+    }
+
+    .lesson-body {
+      display: grid;
+      gap: 16px;
+      padding: 20px;
+    }
+
+    .teach-block {
+      border: 1px solid #e4ddd0;
+      border-radius: var(--radius);
+      padding: 17px;
+      background: #fffefa;
+    }
+
+    .teach-block h3 {
+      margin: 0 0 9px;
+      color: var(--teal-dark);
+      font-size: 19px;
+    }
+
+    .teach-block p {
+      margin: 0 0 10px;
+      color: #40474f;
+    }
+
+    .teach-block p:last-child {
+      margin-bottom: 0;
+    }
+
+    .teach-block ul,
+    .teach-block ol {
+      margin: 0;
+      padding-left: 20px;
+      color: #40474f;
+    }
+
+    .teach-block li {
+      margin: 5px 0;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .mini-card {
+      border-top: 4px solid var(--teal);
+      border-radius: var(--radius);
+      padding: 13px;
+      background: #fffefa;
+    }
+
+    .mini-card:nth-child(2) {
+      border-color: var(--coral);
+    }
+
+    .mini-card:nth-child(3) {
+      border-color: var(--blue);
+    }
+
+    .mini-card:nth-child(4) {
+      border-color: var(--gold);
+    }
+
+    .mini-card strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 17px;
+    }
+
+    .mini-card span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .quote {
+      border-left: 5px solid var(--teal);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      background: #e9f4f0;
+      color: #183331;
+      font-size: 18px;
+      font-weight: 850;
+    }
+
+    .codebox {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: #1d2329;
+    }
+
+    .codebox pre {
+      overflow: auto;
+      margin: 0;
+      padding: 17px;
+      color: #f7f4ec;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 9px;
+      right: 9px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 6px;
+      padding: 6px 9px;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.12);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .quiz {
+      border: 1px solid #d8d0c1;
+      border-radius: var(--radius);
+      padding: 16px;
+      background: #fbf8f1;
+    }
+
+    .quiz h3 {
+      margin: 0 0 10px;
+      color: var(--ink);
+    }
+
+    .quiz-options {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .quiz-option {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 11px;
+      background: #fff;
+      text-align: left;
+    }
+
+    .quiz-option.correct {
+      border-color: var(--ok);
+      background: #e9f6ef;
+    }
+
+    .quiz-option.wrong {
+      border-color: var(--bad);
+      background: #fff0ee;
+    }
+
+    .feedback {
+      display: none;
+      margin-top: 10px;
+      border-radius: 7px;
+      padding: 11px;
+      background: #e9f4f0;
+      color: #183331;
+      font-weight: 750;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .textarea-wrap {
+      display: grid;
+      gap: 10px;
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      background: #fff;
+      color: var(--ink);
+      line-height: 1.5;
     }
 
     .hint {
       color: var(--muted);
-      font-size: 12px;
-      white-space: nowrap;
+      font-size: 14px;
     }
 
-    .toolbox,
-    .workspace,
-    .output {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      min-height: 0;
-    }
-
-    .blocks {
-      display: grid;
-      gap: 10px;
-      padding: 14px;
-      overflow: auto;
-    }
-
-    .toolbox-empty {
+    .prompt-lab {
       padding: 18px;
-      color: var(--muted);
-      text-align: center;
-      border: 2px dashed #cbd6e3;
-      border-radius: 8px;
-      background: #fbfcfe;
-      font-size: 13px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .block {
-      position: relative;
-      display: grid;
-      gap: 9px;
-      padding: 11px 12px 11px 18px;
-      color: #fff;
-      border-radius: 8px;
-      cursor: grab;
-      user-select: none;
-      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.18);
-    }
-
-    .block::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 18px;
-      width: 10px;
-      height: 20px;
-      border-radius: 0 999px 999px 0;
-      background: rgba(255, 255, 255, 0.32);
-    }
-
-    .block:active {
-      cursor: grabbing;
-    }
-
-    .block.heading { background: #2f7ed8; }
-    .block.paragraph { background: #179b62; }
-    .block.image { background: #e27a23; }
-    .block.button-link { background: #9b5bd8; }
-    .block.text-link { background: #7c4dcc; }
-    .block.section { background: #d85d78; }
-    .block.ul-list { background: #455bb8; }
-    .block.ol-list { background: #4f63c9; }
-    .block.li-item { background: #6a7bd6; }
-    .block.li-link-item { background: #5d72cf; }
-    .block.line-break { background: #68748b; }
-    .block.text-input { background: #198b9b; }
-    .block.unsupported { background: #b04a4a; }
-    .block.html-error { background: #a63a3a; }
-
-    .block-name {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 800;
-      line-height: 1.2;
-    }
-
-    .toolbox .block-name {
-      justify-content: flex-start;
-      text-align: left;
-    }
-
-    .toolbox .block {
-      align-items: center;
-      min-height: 56px;
-      grid-template-columns: 1fr auto;
-    }
-
-    .info-button {
-      display: grid;
-      place-items: center;
-      width: 28px;
-      height: 28px;
-      border: 1px solid rgba(255, 255, 255, 0.45);
-      border-radius: 999px;
-      color: #fff;
-      background: rgba(0, 0, 0, 0.16);
-      cursor: pointer;
-      font-weight: 900;
-      line-height: 1;
-    }
-
-    .info-button:hover {
-      background: rgba(0, 0, 0, 0.28);
-    }
-
-    .info-button.is-active {
-      color: #172032;
-      background: #ffffff;
-      border-color: #ffffff;
-      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.24);
-    }
-
-    .info-button.is-available {
-      color: #172032;
-      background: rgba(255, 255, 255, 0.82);
-      border-color: rgba(255, 255, 255, 0.92);
-    }
-
-    .info-button.is-active {
-      background: #ffffff;
-      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.34);
-      transform: scale(1.06);
-    }
-
-    .library-list {
-      display: grid;
-      gap: 10px;
-      padding: 16px;
-      overflow: auto;
-      background: #f4f6f8;
-    }
-
-    .library-list .block {
-      grid-template-columns: 1fr auto auto;
-      align-items: center;
-      min-height: 58px;
-    }
-
-    .heart-button {
-      display: grid;
-      place-items: center;
-      width: 32px;
-      height: 32px;
-      border: 1px solid rgba(255, 255, 255, 0.45);
-      border-radius: 999px;
-      color: #fff;
-      background: rgba(0, 0, 0, 0.16);
-      cursor: pointer;
-      font-size: 18px;
-      font-weight: 900;
-      line-height: 1;
-    }
-
-    .heart-button:hover,
-    .heart-button.is-favorite {
-      color: #d9205c;
-      background: #fff;
-      border-color: #fff;
-    }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      padding: 20px;
-      background: rgba(15, 23, 42, 0.48);
-      z-index: 20;
-    }
-
-    .modal-backdrop[hidden] {
       display: none;
     }
 
-    .modal {
-      display: grid;
-      grid-template-rows: auto minmax(0, 1fr);
-      width: min(760px, 100%);
-      max-height: min(720px, 92vh);
-      overflow: hidden;
-      border-radius: 8px;
-      background: #fff;
-      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.32);
+    .prompt-lab.show {
+      display: block;
     }
 
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .prompt-lab h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .prompt-lab p {
+      margin: 0 0 14px;
+      color: var(--muted);
+    }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 12px;
-      padding: 16px 18px;
-      color: #fff;
-      background: #172032;
     }
 
-    .modal-header h3 {
-      margin: 0;
-      font-size: 18px;
-    }
-
-    .modal-close {
-      display: grid;
-      place-items: center;
-      width: 34px;
-      height: 34px;
-      border: 0;
-      border-radius: 7px;
-      color: #fff;
-      background: rgba(255, 255, 255, 0.14);
-      cursor: pointer;
-      font-size: 24px;
-      font-weight: 800;
-    }
-
-    .modal-body {
-      display: grid;
-      grid-template-rows: minmax(240px, 1fr);
-      min-height: 0;
-    }
-
-    .sample-preview {
-      min-height: 0;
-      border: 0;
-      background: #fff;
-    }
-
-
-    .block-fields {
-      display: grid;
-      gap: 8px;
-    }
-
-    .block label {
-      display: grid;
-      gap: 4px;
-      font-size: 11px;
-      font-weight: 700;
-      color: rgba(255, 255, 255, 0.86);
-    }
-
-    .block input,
-    .block textarea,
-    .block select {
-      width: 100%;
-      border: 0;
-      border-radius: 6px;
-      padding: 7px 8px;
-      color: #162033;
-      background: rgba(255, 255, 255, 0.94);
-      outline: none;
-    }
-
-    .block textarea {
-      min-height: 66px;
-      resize: vertical;
-    }
-
-    .inline-field {
-      display: grid;
-      gap: 4px;
-    }
-
-    .inline-field.no-label {
-      grid-template-columns: 1fr 30px;
-      gap: 7px;
-      align-items: center;
-    }
-
-    .inline-field.no-label::after {
-      content: "";
-      width: 30px;
-      height: 1px;
-    }
-
-    .repeat-field {
-      display: grid;
-      gap: 7px;
-    }
-
-    .repeat-field-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: rgba(255, 255, 255, 0.86);
-    }
-
-    .repeat-rows {
-      display: grid;
-      gap: 7px;
-    }
-
-    .repeat-row {
-      display: grid;
-      grid-template-columns: 1fr 30px;
-      gap: 7px;
-      align-items: center;
-    }
-
-    .repeat-row input {
-      min-width: 0;
-    }
-
-    .repeat-remove,
-    .repeat-add {
-      display: grid;
-      place-items: center;
-      width: 30px;
-      height: 30px;
-      border: 0;
-      border-radius: 6px;
-      color: #fff;
-      background: rgba(0, 0, 0, 0.18);
-      cursor: pointer;
-      font-size: 20px;
-      font-weight: 800;
-      line-height: 1;
-    }
-
-    .repeat-remove:hover,
-    .repeat-add:hover {
-      background: rgba(0, 0, 0, 0.3);
-    }
-
-    .repeat-add {
-      justify-self: end;
-    }
-
-    .workspace-drop {
-      position: relative;
-      flex: 1;
-      min-height: 280px;
-      padding: 14px;
-      overflow: auto;
-      background:
-        linear-gradient(90deg, rgba(23, 32, 50, 0.045) 1px, transparent 1px),
-        linear-gradient(rgba(23, 32, 50, 0.045) 1px, transparent 1px);
-      background-size: 24px 24px;
-    }
-
-    .workspace-drop.is-over {
-      outline: 3px solid rgba(47, 140, 255, 0.28);
-      outline-offset: -6px;
-    }
-
-    .empty-state {
-      display: grid;
-      place-items: center;
+    .lab-output {
       min-height: 220px;
-      color: var(--muted);
-      text-align: center;
-      border: 2px dashed #cbd6e3;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.68);
-    }
-
-    .empty-state[hidden] {
-      display: none;
-    }
-
-    .workspace-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .workspace-card {
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.32);
-    }
-
-    .workspace-card.dragging {
-      opacity: 0.5;
-    }
-
-    .drop-placeholder {
-      min-height: 58px;
-      border: 2px dashed #7aaef0;
-      border-radius: 8px;
-      background: rgba(47, 140, 255, 0.12);
-    }
-
-    .card-actions {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .icon-button {
-      display: grid;
-      place-items: center;
-      width: 30px;
-      height: 30px;
-      border: 0;
-      border-radius: 6px;
-      color: #fff;
-      background: rgba(0, 0, 0, 0.18);
-      cursor: pointer;
-    }
-
-    .icon-button:hover {
-      background: rgba(0, 0, 0, 0.3);
-    }
-
-    .preview-pane,
-    .code-pane {
-      flex: 1;
-      min-height: 0;
-    }
-
-    .preview-pane {
-      display: grid;
-      grid-template-rows: minmax(120px, var(--preview-pane-height, 55%)) 8px minmax(120px, 1fr);
-      height: 100%;
-    }
-
-    .preview-stage {
-      display: grid;
-      place-items: stretch;
-      min-height: 0;
-      background: #fff;
-      overflow: auto;
-    }
-
-    .preview-stage.ios,
-    .preview-stage.android {
-      place-items: center;
-      padding: 18px;
-      background: #e8edf3;
-    }
-
-    .preview-stage.ios-textview {
-      background: #eef1f5;
-    }
-
-    .preview-stage.ios-label {
-      background: #f1f3f7;
-    }
-
-    .preview-stage.ios-swiftui {
-      background: #eef5ff;
-    }
-
-    .preview-stage.ios-safari {
-      background: #e8edf3;
-    }
-
-    .preview-stage.android-textview {
-      background: #edf2f0;
-    }
-
-    .preview-stage.android-compose {
-      background: #e9eef8;
-    }
-
-    .preview-stage.sized iframe {
-      width: min(var(--preview-width), 100%);
-      height: min(var(--preview-height), 100%);
-    }
-
-    .preview-stage.ios iframe,
-    .preview-stage.android iframe {
-      width: min(var(--preview-width, 390px), 100%);
-      height: min(var(--preview-height, 760px), 100%);
-      min-height: 260px;
-      border: 10px solid #172032;
-      box-shadow: 0 18px 42px rgba(23, 32, 50, 0.2);
-    }
-
-    .preview-stage.ios iframe {
-      border-radius: 30px;
-    }
-
-    .preview-stage.android iframe {
-      border-radius: 18px;
-    }
-
-    .preview-stage.ios-textview iframe {
-      border-color: #2d3442;
-      background: #f9fafc;
-    }
-
-    .preview-stage.ios-label iframe {
-      border-color: #303846;
-      background: #fbfbfd;
-    }
-
-    .preview-stage.ios-swiftui iframe {
-      border-color: #24415f;
-      background: #ffffff;
-    }
-
-    .preview-stage.ios-safari iframe {
-      border-color: #152033;
-      background: #ffffff;
-    }
-
-    .preview-stage.android-textview iframe {
-      border-color: #24352d;
-      background: #fbfdfc;
-    }
-
-    .preview-stage.android-compose iframe {
-      border-color: #26334f;
-    }
-
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      background: #fff;
-    }
-
-    .splitter {
-      min-height: 8px;
-      background: #d7dee8;
-      cursor: row-resize;
-      position: relative;
-    }
-
-    .splitter::before {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 54px;
-      height: 3px;
-      border-radius: 999px;
-      background: #8b98aa;
-      transform: translate(-50%, -50%);
-    }
-
-    .splitter:hover,
-    .splitter.is-dragging {
-      background: #c5cfdd;
-    }
-
-    .code-wrap {
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      height: 100%;
-      min-height: 0;
-      border-top: 1px solid var(--line);
-    }
-
-    .code-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 9px 12px;
-      background: #172032;
-      color: #dce7f5;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .copy-state {
-      color: #9dd9b8;
-      font-size: 12px;
-      min-width: 54px;
-      text-align: right;
-    }
-
-    .code-editor {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      min-height: 0;
-      overflow: hidden;
-      background: #101827;
-    }
-
-    .line-numbers {
-      min-width: 42px;
-      padding: 14px 8px 14px 12px;
-      overflow: hidden;
-      color: #778399;
-      background: #0d1421;
-      border-right: 1px solid rgba(255, 255, 255, 0.08);
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-      font-size: 13px;
-      line-height: 1.5;
-      text-align: right;
-      user-select: none;
-      white-space: pre;
-    }
-
-    textarea.code {
-      width: 100%;
-      height: 100%;
-      min-height: 180px;
-      border: 0;
+      border-radius: var(--radius);
       padding: 14px;
-      resize: none;
-      outline: none;
-      color: #e8eff8;
-      background: #101827;
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-      font-size: 13px;
-      line-height: 1.5;
-      tab-size: 2;
+      background: #1d2329;
+      color: #f7f4ec;
+      white-space: pre-wrap;
+      font-size: 14px;
+      line-height: 1.55;
     }
 
-    .mini-button {
-      border: 1px solid rgba(255, 255, 255, 0.24);
-      border-radius: 6px;
-      padding: 6px 9px;
-      color: #fff;
-      background: rgba(255, 255, 255, 0.1);
-      cursor: pointer;
-      font-weight: 700;
+    .footer {
+      padding: 24px 22px 40px;
+      color: #d7e6e2;
+      background: #15211f;
     }
 
-    .mini-button:hover {
-      background: rgba(255, 255, 255, 0.18);
+    .footer-inner {
+      max-width: 1320px;
+      margin: 0 auto;
     }
 
-    @media (max-width: 1100px) {
-      main {
-        grid-template-columns: 240px minmax(320px, 1fr);
+    @media (max-width: 1060px) {
+      .layout {
+        grid-template-columns: 1fr;
       }
 
-      .output {
-        grid-column: 1 / -1;
-        min-height: 520px;
+      .sidebar {
+        position: static;
+      }
+
+      .lesson-nav {
+        grid-template-columns: repeat(5, minmax(130px, 1fr));
+        overflow: auto;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .compare,
+      .grid-3 {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
 
-    @media (max-width: 760px) {
-      header {
+    @media (max-width: 720px) {
+      .topbar {
         align-items: flex-start;
         flex-direction: column;
       }
 
-      .header-actions {
-        justify-content: flex-start;
+      .progress-wrap {
+        width: 100%;
+        min-width: 0;
       }
 
-      main {
+      .layout {
+        padding: 14px;
+      }
+
+      .hero-main,
+      .lesson-body,
+      .lesson-head,
+      .prompt-lab {
+        padding: 16px;
+      }
+
+      h1 {
+        font-size: 40px;
+      }
+
+      .lesson-head {
         grid-template-columns: 1fr;
       }
 
-      .toolbox,
-      .workspace,
-      .output {
-        min-height: 430px;
+      .grid-2,
+      .grid-3,
+      .compare,
+      .lab-grid {
+        grid-template-columns: 1fr;
       }
 
-      .preview-pane {
-        grid-template-rows: 280px 8px minmax(260px, 1fr);
+      .lesson-nav {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <header>
+    <header class="topbar">
       <div class="brand">
-        <button class="hamburger-button" id="openBlockLibrary" type="button" aria-label="開啟積木庫">
-          <span class="hamburger-lines" aria-hidden="true"></span>
-        </button>
-        <div>
-          <h1>Scratch HTML Builder</h1>
-          <p class="subhead">拖曳積木、填入內容，即時產生 HTML 與預覽</p>
-        </div>
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 3v4"></path><path d="M5 8l3 3"></path><path d="M19 8l-3 3"></path><path d="M7 14h10"></path><path d="M8 18h8"></path><path d="M12 7a5 5 0 0 1 5 5v1H7v-1a5 5 0 0 1 5-5Z"></path></svg>
+        </span>
+        <span>AI Agent Skills x SDD 自學教室</span>
       </div>
-      <div class="header-actions">
-        <button class="button secondary" id="loadSample" type="button">載入範例</button>
-        <button class="button secondary" id="clearWorkspace" type="button">清空</button>
-        <button class="button" id="downloadHtml" type="button">下載完整 HTML</button>
+      <div class="progress-wrap" aria-label="學習進度">
+        <span class="progress-label" id="progressText">第 1 / 5 課</span>
+        <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
       </div>
     </header>
 
-    <main>
-      <section class="panel toolbox" aria-label="積木工具箱">
-        <div class="panel-title">
-          <h2>積木</h2>
-          <span class="hint">拖到中間</span>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sidebar-head">
+          <strong>跟著順序學</strong>
+          <span>讀完一課，做小測驗，再進下一課。</span>
         </div>
-        <div class="blocks" id="toolbox"></div>
-      </section>
+        <nav class="lesson-nav" aria-label="課程章節">
+          <button class="lesson-tab active" data-target="1"><span class="tab-num">1</span><span class="tab-text">Agent / Prompt / Rule / Skill<span>先分清楚角色</span></span></button>
+          <button class="lesson-tab" data-target="2"><span class="tab-num">2</span><span class="tab-text">什麼適合做 Skill<span>判斷工作流價值</span></span></button>
+          <button class="lesson-tab" data-target="3"><span class="tab-num">3</span><span class="tab-text">SDD 基礎<span>先規格再寫 code</span></span></button>
+          <button class="lesson-tab" data-target="4"><span class="tab-num">4</span><span class="tab-text">SpecKit 流程<span>四步驟跑起來</span></span></button>
+          <button class="lesson-tab" data-target="5"><span class="tab-num">5</span><span class="tab-text">做成 Agent Skill<span>把流程封裝起來</span></span></button>
+        </nav>
+      </aside>
 
-      <section class="panel workspace" aria-label="編輯工作區">
-        <div class="panel-title">
-          <h2>工作區</h2>
-          <span class="hint">可拖曳排序</span>
-        </div>
-        <div class="workspace-drop" id="workspaceDrop">
-          <div class="empty-state" id="emptyState">把左邊的積木拖進來開始組頁面</div>
-          <div class="workspace-list" id="workspaceList"></div>
-        </div>
-      </section>
-
-      <section class="panel output" aria-label="預覽與 HTML 輸出">
-        <div class="panel-title preview-title">
-          <h2>預覽</h2>
-          <div class="mode-controls" aria-label="預覽模式">
-            <div class="size-fields" aria-label="預覽尺寸">
-              <label class="size-field">Size W
-                <input id="previewWidth" type="number" min="120" max="2000" step="1" placeholder="auto">
-              </label>
-              <label class="size-field">Size H
-                <input id="previewHeight" type="number" min="120" max="2000" step="1" placeholder="auto">
-              </label>
-            </div>
-            <select id="platformMode" aria-label="平台模式">
-              <option value="web">網頁</option>
-              <option value="ios">iOS</option>
-              <option value="android">Android</option>
-            </select>
-            <select id="iosMode" aria-label="iOS 模式" hidden>
-              <option value="wkwebview">iOS-WKWebView</option>
-              <option value="textview">iOS-UITextView attributedText</option>
-              <option value="label">iOS-UILabel attributedText</option>
-              <option value="swiftui-attributed">iOS-SwiftUI AttributedString</option>
-              <option value="safari">iOS-SafariViewController</option>
-            </select>
-            <div class="platform-factors" id="iosFactors" aria-label="iOS 顯示因素" hidden>
-              <label>Dynamic Type
-                <select id="iosFontScale" aria-label="iOS Dynamic Type">
-                  <option value="1">Default</option>
-                  <option value="1.12">Large</option>
-                  <option value="1.28">Extra Large</option>
-                  <option value="1.48">Accessibility</option>
-                </select>
-              </label>
-              <label><input id="iosDarkMode" type="checkbox">Dark Mode</label>
-              <label><input id="iosHideImages" type="checkbox">Image disabled</label>
-              <label><input id="iosDisableLinks" type="checkbox">Link disabled</label>
-              <label><input id="iosStrictAttributed" type="checkbox">Attributed strict</label>
-            </div>
-            <select id="androidMode" aria-label="Android 模式" hidden>
-              <option value="webview">Android-WebView</option>
-              <option value="textview">Android-TextView HtmlCompat</option>
-              <option value="compose-webview">Android-Compose AndroidView(WebView)</option>
-            </select>
-            <div class="platform-factors" id="androidFactors" aria-label="Android 顯示因素" hidden>
-              <label>Font Scale
-                <select id="androidFontScale" aria-label="Android Font Scale">
-                  <option value="1">1.0x</option>
-                  <option value="1.15">1.15x</option>
-                  <option value="1.3">1.3x</option>
-                  <option value="1.5">1.5x</option>
-                </select>
-              </label>
-              <label><input id="androidDarkMode" type="checkbox">Dark Mode</label>
-              <label><input id="androidHideImages" type="checkbox">Image disabled</label>
-              <label><input id="androidDisableLinks" type="checkbox">Link disabled</label>
-              <label><input id="androidStrictHtml" type="checkbox">HtmlCompat strict</label>
+      <main class="content">
+        <section class="hero" id="top">
+          <div class="hero-main">
+            <p class="eyebrow">這份網頁會一步一步教你</p>
+            <h1>從會用 AI，到會教 Agent 照你的流程做事</h1>
+            <p>
+              你會學會三件事：先分清楚 Agent / Prompt / Rule / Skill，再理解 SDD 為什麼能減少 AI 亂猜，
+              最後把 SDD 寫成一個 Codex Skill。每一課都有例子、測驗和可直接複製的 prompt。
+            </p>
+            <div class="hero-actions">
+              <button class="btn" data-jump="1"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></span>從第 1 課開始</button>
+              <button class="btn secondary" data-jump-lab="true"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 6h13"></path><path d="M8 12h13"></path><path d="M8 18h13"></path><path d="M3 6h.01"></path><path d="M3 12h.01"></path><path d="M3 18h.01"></path></svg></span>直接產生 SDD Prompt</button>
             </div>
           </div>
-        </div>
-        <div class="preview-pane">
-          <div class="preview-stage web" id="previewStage">
-            <iframe id="preview" title="HTML preview"></iframe>
+          <aside class="status-card">
+            <div class="status-head">
+              <strong>學完你要能做到</strong>
+              <span>這不是背名詞，是能拿來工作。</span>
+            </div>
+            <div class="status-list">
+              <div class="status-row"><span class="check-dot">1</span><span>判斷一個任務該用 prompt、rule 還是 skill。</span></div>
+              <div class="status-row"><span class="check-dot">2</span><span>把模糊需求改寫成 spec。</span></div>
+              <div class="status-row"><span class="check-dot">3</span><span>用 specify → plan → tasks → implement 控制 Codex。</span></div>
+              <div class="status-row"><span class="check-dot">4</span><span>寫出一份可重複使用的 SDD Skill。</span></div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="lesson-panel active" data-lesson="1">
+          <div class="lesson-head">
+            <span class="lesson-badge">1</span>
+            <div class="lesson-title">
+              <h2>先分清楚：Agent、Prompt、Rule、Skill</h2>
+              <p>這是最重要的地基。你不是要記名詞，而是要知道每種東西該放哪一層。</p>
+            </div>
           </div>
-          <div class="splitter" id="previewSplitter" role="separator" aria-label="調整預覽與 HTML 高度" aria-orientation="horizontal"></div>
-          <div class="code-wrap">
-            <div class="code-toolbar">
-              <span id="codeLabel">HTML</span>
-              <div>
-                <button class="mini-button" id="copyHtml" type="button">複製</button>
-                <span class="copy-state" id="copyState"></span>
+          <div class="lesson-body">
+            <div class="teach-block">
+              <h3>你先這樣理解</h3>
+              <p>你平常跟 AI 說「幫我做登入功能」，這是 prompt。它只告訴 AI 這一次要做什麼，但沒有告訴 AI 應該怎麼工作。</p>
+              <p>所以 AI 可能直接改 code，也可能先問問題，也可能亂猜你的架構。這不是 AI 壞掉，而是你只給了任務，沒有給流程。</p>
+            </div>
+
+            <div class="compare">
+              <div class="mini-card"><strong>Prompt</strong><span>單次指令。回答：這次要做什麼？</span></div>
+              <div class="mini-card"><strong>Rule</strong><span>長期規則。回答：永遠不能違反什麼？</span></div>
+              <div class="mini-card"><strong>Skill</strong><span>可重複流程。回答：遇到這類任務時怎麼做？</span></div>
+              <div class="mini-card"><strong>Agent</strong><span>執行者。會讀檔、改 code、跑工具、回報結果。</span></div>
+            </div>
+
+            <div class="quote">一句話記住：Prompt 叫 AI 做事，Rule 約束 AI，Skill 教 AI 怎麼做事，Agent 負責執行。</div>
+
+            <div class="grid-2">
+              <div class="teach-block">
+                <h3>不穩定的說法</h3>
+                <div class="codebox"><pre>幫我新增怪獸收藏功能。</pre></div>
+                <p>問題是 AI 不知道要不要先看專案、要不要寫 spec、能改哪些檔案、做完要不要 build。</p>
+              </div>
+              <div class="teach-block">
+                <h3>比較穩定的說法</h3>
+                <div class="codebox"><pre>請用 SDD 流程協助我新增怪獸收藏功能。
+先不要改 code。
+請先釐清需求並產出 spec，等我確認後再 plan、tasks、implement。</pre></div>
+                <p>這句話開始規定流程，所以 Agent 比較不會爆衝。</p>
               </div>
             </div>
-            <div class="code-editor">
-              <div class="line-numbers" id="htmlLineNumbers" aria-hidden="true">1</div>
-              <textarea class="code" id="htmlOutput" spellcheck="false" aria-label="貼上或編輯 HTML" placeholder="貼上 HTML 片段，會自動反推工作區方塊"></textarea>
+
+            <div class="quiz" data-quiz>
+              <h3>小測驗：哪一個是 Skill？</h3>
+              <p>點一個答案，看看你有沒有抓到。</p>
+              <div class="quiz-options">
+                <button class="quiz-option" data-correct="false">幫我修 bug。</button>
+                <button class="quiz-option" data-correct="false">請回答都用繁體中文。</button>
+                <button class="quiz-option" data-correct="true">當我要修 bug 時，先重現、定位、提出假設、最小修改、跑測試、回報原因。</button>
+              </div>
+              <div class="feedback">正解是第三個。因為它描述的是「遇到 bug fix 這類任務時的固定流程」。</div>
+            </div>
+
+            <button class="btn ghost next" data-next="2">我懂了，下一課</button>
+          </div>
+        </section>
+
+        <section class="lesson-panel" data-lesson="2">
+          <div class="lesson-head">
+            <span class="lesson-badge">2</span>
+            <div class="lesson-title">
+              <h2>什麼工作適合做成 Skill？</h2>
+              <p>不是所有任務都要 skill。Skill 是拿來處理重複、容易漏、需要流程的工作。</p>
             </div>
           </div>
-        </div>
-      </section>
-    </main>
-  </div>
+          <div class="lesson-body">
+            <div class="teach-block">
+              <h3>判斷公式</h3>
+              <p>如果一個工作同時符合這幾個條件，就很適合做成 Skill：</p>
+              <ul>
+                <li>會重複發生，例如每週都要串 API、review PR、根據 Trello 卡實作。</li>
+                <li>有固定流程，例如先讀規格、再找架構、再實作、再驗證。</li>
+                <li>需要專案知識，例如 APIManager、ViewModel、Coordinator、coding style。</li>
+                <li>容易做錯，例如 AI 常漏 fake data、漏錯誤狀態、亂改不相關檔案。</li>
+                <li>有明確輸出，例如 code、spec、review report、測試結果。</li>
+              </ul>
+            </div>
 
-  <div class="modal-backdrop" id="blockInfoModal" hidden>
-    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="blockInfoTitle">
-      <div class="modal-header">
-        <h3 id="blockInfoTitle">積木效果</h3>
-        <button class="modal-close" id="blockInfoClose" type="button" aria-label="關閉">×</button>
-      </div>
-      <div class="modal-body">
-        <iframe class="sample-preview" id="blockInfoPreview" title="積木效果預覽"></iframe>
-      </div>
-    </section>
-  </div>
+            <div class="quote">記住這個公式：重複 + 有流程 + 容易漏 + 有標準輸出 = 適合做 Skill。</div>
 
-  <div class="modal-backdrop" id="blockLibraryModal" hidden>
-    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="blockLibraryTitle">
-      <div class="modal-header">
-        <h3 id="blockLibraryTitle">積木庫</h3>
-        <button class="modal-close" id="blockLibraryClose" type="button" aria-label="關閉">×</button>
+            <div class="grid-2">
+              <div class="teach-block">
+                <h3>不適合做 Skill</h3>
+                <ul>
+                  <li>改 typo。</li>
+                  <li>把一個顏色改掉。</li>
+                  <li>問某段 code 是什麼意思。</li>
+                </ul>
+                <p>這些任務太小，用 prompt 就好。</p>
+              </div>
+              <div class="teach-block">
+                <h3>適合做 Skill</h3>
+                <ul>
+                  <li>根據 API 文件新增一支 API。</li>
+                  <li>依團隊規範 review Swift PR。</li>
+                  <li>做一個需要 spec、plan、tasks 的新 feature。</li>
+                </ul>
+                <p>這些任務有流程、有標準、也容易漏步驟。</p>
+              </div>
+            </div>
+
+            <div class="teach-block">
+              <h3>你可以這樣問自己</h3>
+              <ol>
+                <li>這件事我是不是做過很多次？</li>
+                <li>如果交給新人，我會不會寫一份 SOP？</li>
+                <li>AI 做這件事時，最常漏哪一步？</li>
+                <li>最後結果有沒有固定格式？</li>
+              </ol>
+              <p>如果答案大多是「有」，它就是 skill 候選人。</p>
+            </div>
+
+            <div class="quiz" data-quiz>
+              <h3>小測驗：哪個最適合做成 Skill？</h3>
+              <div class="quiz-options">
+                <button class="quiz-option" data-correct="false">把 README 裡的一個錯字改掉。</button>
+                <button class="quiz-option" data-correct="true">根據 ClickUp API 文件，在 iOS 專案新增 API、Model、Manager method、fake data 並 build 驗證。</button>
+                <button class="quiz-option" data-correct="false">請解釋 Swift 的 optional 是什麼。</button>
+              </div>
+              <div class="feedback">正解是第二個。它重複、有流程、需要專案知識，而且有明確輸出。</div>
+            </div>
+
+            <button class="btn ghost next" data-next="3">我懂了，下一課</button>
+          </div>
+        </section>
+
+        <section class="lesson-panel" data-lesson="3">
+          <div class="lesson-head">
+            <span class="lesson-badge">3</span>
+            <div class="lesson-title">
+              <h2>SDD 基礎：為什麼不要直接叫 AI 寫 code？</h2>
+              <p>AI 通常不是不會寫 code，而是不知道你真正要什麼。</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <div class="teach-block">
+              <h3>SDD 是什麼</h3>
+              <p>SDD 是 Spec Driven Development。簡單講：先把「要做什麼」定清楚，再決定「怎麼做」，最後才寫 code。</p>
+              <p>你說「新增怪獸收藏功能」，AI 還不知道收藏狀態存本機還是 server、列表和詳情要不要同步、沒登入能不能收藏、失敗要怎麼顯示。這些都不講，它就只能猜。</p>
+            </div>
+
+            <div class="compare">
+              <div class="mini-card"><strong>Spec</strong><span>定義需求：使用者可以做什麼、畫面有哪些狀態、什麼算完成。</span></div>
+              <div class="mini-card"><strong>Plan</strong><span>定義技術方案：改哪些檔案、資料怎麼流、有什麼風險。</span></div>
+              <div class="mini-card"><strong>Tasks</strong><span>定義步驟：第一步做什麼、每一步如何驗證。</span></div>
+              <div class="mini-card"><strong>Code</strong><span>最後才實作，而且要對照 spec 驗證。</span></div>
+            </div>
+
+            <div class="teach-block">
+              <h3>Spec 應該回答什麼</h3>
+              <ul>
+                <li>使用者故事：誰，在什麼情境，要完成什麼事？</li>
+                <li>功能範圍：這次要做哪些行為？</li>
+                <li>不做事項：搜尋、排序、同步、登入限制這次做不做？</li>
+                <li>UI 狀態：載入、空資料、錯誤、成功、已收藏、未收藏。</li>
+                <li>驗收條件：怎樣算完成？</li>
+              </ul>
+            </div>
+
+            <div class="grid-2">
+              <div class="teach-block">
+                <h3>模糊需求</h3>
+                <div class="codebox"><pre>我想做一個怪獸圖鑑功能。</pre></div>
+              </div>
+              <div class="teach-block">
+                <h3>改成 Spec 問題</h3>
+                <div class="codebox"><pre>入口在哪？
+列表顯示哪些欄位？
+詳情頁顯示哪些資料？
+載入失敗怎麼辦？
+空資料怎麼辦？
+這次不做搜尋和排序嗎？
+怎樣算完成？</pre></div>
+              </div>
+            </div>
+
+            <div class="codebox">
+              <button class="copy-btn" data-copy>複製</button>
+              <pre>請不要寫 code。
+請先把以下需求整理成 SDD spec：
+
+需求：新增怪獸收藏功能
+
+請包含：
+- user stories
+- in scope
+- out of scope
+- UI states
+- data states
+- acceptance criteria</pre>
+            </div>
+
+            <div class="quiz" data-quiz>
+              <h3>小測驗：Spec 主要在定義什麼？</h3>
+              <div class="quiz-options">
+                <button class="quiz-option" data-correct="true">使用者行為、範圍、狀態與驗收條件。</button>
+                <button class="quiz-option" data-correct="false">要用哪個 class、哪個 function、哪個套件。</button>
+                <button class="quiz-option" data-correct="false">git commit message 的格式。</button>
+              </div>
+              <div class="feedback">對。Spec 先定義行為，不急著談 implementation detail。</div>
+            </div>
+
+            <button class="btn ghost next" data-next="4">我懂了，下一課</button>
+          </div>
+        </section>
+
+        <section class="lesson-panel" data-lesson="4">
+          <div class="lesson-head">
+            <span class="lesson-badge">4</span>
+            <div class="lesson-title">
+              <h2>SpecKit 工作流：specify → plan → tasks → implement</h2>
+              <p>這一課教你怎麼實際控制 Codex，不讓它一開始就衝去改 code。</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <div class="grid-2">
+              <div class="teach-block">
+                <h3>1. specify</h3>
+                <p>只釐清需求。這一步不讀太多 code，也不改檔案。目標是讓需求沒有大洞。</p>
+              </div>
+              <div class="teach-block">
+                <h3>2. plan</h3>
+                <p>讓 Codex 讀專案，提出技術方案。這一步開始談 affected files、data flow、risks、verification。</p>
+              </div>
+              <div class="teach-block">
+                <h3>3. tasks</h3>
+                <p>把 plan 拆成小步驟。每個 task 都要有 done criteria，不然 Agent 會一次做太多。</p>
+              </div>
+              <div class="teach-block">
+                <h3>4. implement</h3>
+                <p>最後才實作。一次做一個 task，完成後驗證，並回頭檢查是否符合 spec。</p>
+              </div>
+            </div>
+
+            <div class="quote">你控制 Codex 的關鍵，不是叫它「小心一點」，而是把它每一步允許做的事切清楚。</div>
+
+            <div class="grid-3">
+              <div class="teach-block">
+                <h3>Plan Prompt</h3>
+                <div class="codebox">
+                  <button class="copy-btn" data-copy>複製</button>
+                  <pre>請根據剛剛的 spec 讀取目前專案，產出 implementation plan。
+先不要修改檔案。
+
+請包含：
+- affected files
+- data flow
+- UI changes
+- risks
+- verification method</pre>
+                </div>
+              </div>
+              <div class="teach-block">
+                <h3>Tasks Prompt</h3>
+                <div class="codebox">
+                  <button class="copy-btn" data-copy>複製</button>
+                  <pre>請把 plan 拆成 tasks。
+每個 task 請包含：
+- goal
+- files likely touched
+- done criteria
+- verification
+請依相依性排序。</pre>
+                </div>
+              </div>
+              <div class="teach-block">
+                <h3>Implement Prompt</h3>
+                <div class="codebox">
+                  <button class="copy-btn" data-copy>複製</button>
+                  <pre>請先實作 Task 1。
+只修改 Task 1 需要的檔案。
+完成後請回報：
+- 修改了哪些檔案
+- 如何驗證
+- 是否符合 spec</pre>
+                </div>
+              </div>
+            </div>
+
+            <div class="teach-block">
+              <h3>Constitution / Governance 是什麼</h3>
+              <p><strong>Constitution</strong> 是專案不可違反的原則，例如不要繞過 APIManager、不要在 ViewController 塞商業邏輯、不要新增未經同意的套件。</p>
+              <p><strong>Governance</strong> 是規格怎麼維護，例如需求變更先改 spec、實作完成要更新 tasks、review 時要檢查 code 是否符合 spec。</p>
+            </div>
+
+            <div class="quiz" data-quiz>
+              <h3>小測驗：哪個順序比較穩？</h3>
+              <div class="quiz-options">
+                <button class="quiz-option" data-correct="false">implement → spec → plan → tasks</button>
+                <button class="quiz-option" data-correct="true">specify → plan → tasks → implement</button>
+                <button class="quiz-option" data-correct="false">tasks → implement → specify → plan</button>
+              </div>
+              <div class="feedback">對。先定需求，再定方案，再拆任務，最後才實作。</div>
+            </div>
+
+            <button class="btn ghost next" data-next="5">我懂了，下一課</button>
+          </div>
+        </section>
+
+        <section class="lesson-panel" data-lesson="5">
+          <div class="lesson-head">
+            <span class="lesson-badge">5</span>
+            <div class="lesson-title">
+              <h2>把 SDD 變成 Agent Skill</h2>
+              <p>現在把你學到的流程封裝起來，讓 Codex 以後每次都照這套方法做。</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <div class="teach-block">
+              <h3>Skill 不是更長的 prompt</h3>
+              <p>Skill 是「遇到某類任務時，Agent 應該採用的工作方法」。它要寫清楚何時使用、輸入是什麼、步驟怎麼走、什麼時候要停下確認、最後要輸出什麼。</p>
+            </div>
+
+            <div class="compare">
+              <div class="mini-card"><strong>When to use</strong><span>什麼任務觸發這個 skill。</span></div>
+              <div class="mini-card"><strong>Workflow</strong><span>Agent 要照哪個順序工作。</span></div>
+              <div class="mini-card"><strong>Checkpoints</strong><span>何時不能繼續、何時要驗證。</span></div>
+              <div class="mini-card"><strong>Output</strong><span>最後回報格式要穩定。</span></div>
+            </div>
+
+            <div class="teach-block">
+              <h3>一份可用的 SDD Skill</h3>
+              <div class="codebox">
+                <button class="copy-btn" data-copy>複製</button>
+                <pre># SDD Feature Development Skill
+
+Use this skill when implementing a non-trivial feature that changes user-visible behavior, touches multiple files, or requires technical decisions.
+
+## Workflow
+
+1. Clarify the requirement.
+2. Write or update the spec.
+3. Ask for confirmation if the spec has unresolved questions.
+4. Read the codebase and create an implementation plan.
+5. Break the plan into tasks.
+6. Implement one task at a time.
+7. Verify with tests, build, or manual checks.
+8. Review the implementation against the spec.
+9. Summarize changes, verification, and risks.
+
+## Checkpoints
+
+- Do not implement before the spec is clear.
+- Do not modify unrelated files.
+- Do not skip plan and tasks for non-trivial features.
+- Ask before making broad architectural changes.
+- Always verify after implementation.
+
+## Final Output
+
+- What changed
+- Files touched
+- Verification result
+- Remaining risks</pre>
+              </div>
+            </div>
+
+            <div class="teach-block">
+              <h3>完整實戰 Prompt</h3>
+              <p>當你要用 Codex 跑一個新 feature，可以直接貼這段：</p>
+              <div class="codebox">
+                <button class="copy-btn" data-copy>複製</button>
+                <pre>請使用 SDD Feature Development Skill 協助我做 iOS feature。
+Feature：新增怪獸收藏功能。
+
+規則：
+1. 先不要改 code。
+2. 先產出 spec，包含 user stories、scope、out of scope、states、acceptance criteria。
+3. 等我確認後，再讀專案並產 plan。
+4. plan 必須列 affected files、data flow、risks、verification。
+5. 再拆 tasks，每個 task 都要有 done criteria。
+6. 實作時一次只做一個 task。
+7. 完成後執行 build 或說明無法執行的原因，最後做 spec 對照 review。</pre>
+              </div>
+            </div>
+
+            <div class="quiz" data-quiz>
+              <h3>小測驗：Skill 最重要的是什麼？</h3>
+              <div class="quiz-options">
+                <button class="quiz-option" data-correct="false">把語氣寫得很像資深工程師。</button>
+                <button class="quiz-option" data-correct="true">把可重複流程、檢查點和輸出格式寫清楚。</button>
+                <button class="quiz-option" data-correct="false">把所有技術名詞都塞進去。</button>
+              </div>
+              <div class="feedback">對。Skill 的價值在穩定流程，不在漂亮語氣。</div>
+            </div>
+
+            <div class="quote">你現在學到的核心：SDD 是流程，Skill 是把流程交給 Agent 穩定執行的方法。</div>
+          </div>
+        </section>
+
+        <section class="prompt-lab" id="promptLab">
+          <h2>練習：產生你自己的 SDD Prompt</h2>
+          <p>輸入你想做的功能，網頁會幫你組出一段可以貼給 Codex 的 SDD 起手式。</p>
+          <div class="lab-grid">
+            <div class="textarea-wrap">
+              <textarea id="featureInput" placeholder="例如：新增怪獸收藏功能、做一個技能說明 popup、串接會員點數 API"></textarea>
+              <button class="btn" id="generatePrompt">產生 Prompt</button>
+              <span class="hint">先用這段 prompt 讓 Codex 寫 spec，不要急著改 code。</span>
+            </div>
+            <div>
+              <div class="lab-output" id="labOutput">你的 SDD prompt 會出現在這裡。</div>
+              <button class="btn secondary" id="copyGenerated" style="margin-top:10px;">複製產生結果</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <strong>學習收尾：</strong>
+        你不用一次記完所有細節。先記住順序：Prompt 只管單次任務，Rule 管長期約束，Skill 管可重複流程；做 feature 時先 specify，再 plan，再 tasks，最後 implement。
       </div>
-      <div class="library-list" id="blockLibraryList"></div>
-    </section>
+    </footer>
   </div>
 
   <script>
-    const blockTypes = [
-      {
-        type: "heading",
-        name: "標題",
-        icon: "H1",
-        fields: [
-          { key: "level", label: "層級", control: "select", options: ["h1", "h2", "h3"], value: "h1" },
-          { key: "text", label: "文字", control: "input", value: "我的網站標題" }
-        ],
-        toHtml: values => `<${values.level}>${escapeHtml(values.text)}</${values.level}>`
-      },
-      {
-        type: "paragraph",
-        name: "段落",
-        icon: "P",
-        fields: [
-          { key: "text", label: "內容", control: "textarea", value: "這是一段可以編輯的介紹文字。" },
-          {
-            key: "style",
-            label: "Style",
-            control: "select",
-            options: [
-              { value: "", label: "無" },
-              { value: "margin: 0;", label: "margin: 0;" }
-            ],
-            value: ""
-          }
-        ],
-        toHtml: values => `<p${attributeIfPresent("style", values.style)}>${inlineContentHtml(values.text)}</p>`
-      },
-      {
-        type: "image",
-        name: "圖片",
-        icon: "IMG",
-        fields: [
-          { key: "src", label: "圖片網址", control: "input", value: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&auto=format&fit=crop" },
-          { key: "alt", label: "替代文字", control: "input", value: "工作桌上的電腦" }
-        ],
-        toHtml: values => `<img src="${escapeAttribute(values.src)}" alt="${escapeAttribute(values.alt)}">`
-      },
-      {
-        type: "button-link",
-        name: "連結按鈕",
-        icon: "BTN",
-        fields: [
-          { key: "text", label: "文字", control: "input", value: "了解更多" },
-          { key: "href", label: "網址", control: "input", value: "https://example.com" }
-        ],
-        toHtml: values => `<a class="button" href="${escapeAttribute(values.href)}">${escapeHtml(values.text)}</a>`
-      },
-      {
-        type: "text-link",
-        name: "文字連結",
-        icon: "A",
-        fields: [
-          { key: "text", label: "連結文字", control: "input", value: "樹享券官網" },
-          { key: "href", label: "連結網址", control: "input", value: "\\(PathDefinition.statementCreditCoupon)" }
-        ],
-        toHtml: values => `<a href="${escapeAttribute(values.href)}">${escapeHtml(values.text)}</a>`
-      },
-      {
-        type: "section",
-        name: "區塊",
-        icon: "SEC",
-        fields: [
-          { key: "title", label: "標題", control: "input", value: "特色區塊" },
-          { key: "text", label: "內容", control: "textarea", value: "你可以用區塊快速建立一段有背景的內容。" }
-        ],
-        toHtml: values => `<section class="feature">\n  <h2>${escapeHtml(values.title)}</h2>\n  <p>${inlineContentHtml(values.text)}</p>\n</section>`
-      },
-      {
-        type: "ul-list",
-        name: "清單",
-        icon: "UL",
-        fields: [
-          { key: "items", label: "li 項目，每行一個", control: "textarea", repeatable: true, value: "第一個項目\n第二個項目\n第三個項目" }
-        ],
-        toHtml: values => {
-          const items = values.items
-            .split("\n")
-            .map(item => item.trim())
-            .filter(Boolean)
-            .map(item => `  <li>${inlineContentHtml(item)}</li>`)
-            .join("\n");
-          return `<ul>\n${items}\n</ul>`;
-        }
-      },
-      {
-        type: "ol-list",
-        name: "有序清單",
-        icon: "OL",
-        fields: [
-          {
-            key: "marker",
-            label: "",
-            placeholder: "1. 2. 3.",
-            control: "select",
-            options: [
-              { value: "1", label: "1. 2. 3." },
-              { value: "A", label: "A. B. C." },
-              { value: "a", label: "a. b. c." },
-              { value: "I", label: "I. II. III." },
-              { value: "i", label: "i. ii. iii." }
-            ],
-            value: "1"
-          },
-          { key: "items", label: "li 項目，每行一個", control: "textarea", repeatable: true, value: "" }
-        ],
-        toHtml: values => {
-          const items = values.items
-            .split("\n")
-            .map(item => item.trim())
-            .filter(Boolean)
-            .map(item => `  <li>${inlineContentHtml(item)}</li>`)
-            .join("\n");
-          const marker = values.marker && values.marker !== "1" ? ` type="${escapeAttribute(values.marker)}"` : "";
-          return `<ol${marker}>\n${items}\n</ol>`;
-        }
-      },
-      {
-        type: "li-item",
-        name: "項目",
-        icon: "LI",
-        fields: [
-          { key: "text", label: "內容", control: "input", value: "單一清單項目" }
-        ],
-        toHtml: values => `<li>${inlineContentHtml(values.text)}</li>`
-      },
-      {
-        type: "li-link-item",
-        name: "連結項目",
-        icon: "LI+A",
-        fields: [
-          { key: "before", label: "前文字", control: "textarea", value: "其餘樹享券活動規則，請詳" },
-          { key: "linkText", label: "連結文字", control: "input", value: "樹享券官網" },
-          { key: "href", label: "連結網址", control: "input", value: "\\(PathDefinition.statementCreditCoupon)" },
-          { key: "after", label: "後文字", control: "input", value: "。" }
-        ],
-        toHtml: values => `<li>${inlineContentHtml(values.before)}<a href="${escapeAttribute(values.href)}">${escapeHtml(values.linkText)}</a>${inlineContentHtml(values.after)}</li>`
-      },
-      {
-        type: "line-break",
-        name: "換行",
-        icon: "BR",
-        fields: [],
-        toHtml: () => "<br>"
-      },
-      {
-        type: "text-input",
-        name: "輸入欄位",
-        icon: "IN",
-        fields: [
-          { key: "label", label: "標籤", control: "input", value: "Email" },
-          { key: "placeholder", label: "提示文字", control: "input", value: "name@example.com" }
-        ],
-        toHtml: values => `<label>${escapeHtml(values.label)}\n  <input type="text" placeholder="${escapeAttribute(values.placeholder)}">\n</label>`
-      },
-      {
-        type: "unsupported",
-        name: "待新增積木",
-        icon: "!",
-        hiddenFromToolbox: true,
-        fields: [
-          { key: "tag", label: "建議新增的積木", control: "input", value: "unknown" },
-          { key: "html", label: "原始 HTML", control: "textarea", value: "" }
-        ],
-        toHtml: values => values.html
-      },
-      {
-        type: "html-error",
-        name: "HTML 語法錯誤",
-        icon: "!",
-        hiddenFromToolbox: true,
-        fields: [
-          { key: "message", label: "錯誤訊息", control: "textarea", value: "" },
-          { key: "html", label: "原始 HTML", control: "textarea", value: "" }
-        ],
-        toHtml: values => values.html
-      }
-    ];
+    const tabs = Array.from(document.querySelectorAll(".lesson-tab"));
+    const panels = Array.from(document.querySelectorAll(".lesson-panel"));
+    const progressText = document.getElementById("progressText");
+    const progressBar = document.getElementById("progressBar");
 
-    const state = {
-      blocks: [],
-      draggedBlockId: null,
-      draggedSourceType: null,
-      dragPreviewIndex: null,
-      platformMode: "web",
-      iosMode: "wkwebview",
-      iosFontScale: "1",
-      iosDarkMode: false,
-      iosHideImages: false,
-      iosDisableLinks: false,
-      iosStrictAttributed: false,
-      androidMode: "webview",
-      androidFontScale: "1",
-      androidDarkMode: false,
-      androidHideImages: false,
-      androidDisableLinks: false,
-      androidStrictHtml: false,
-      previewWidth: "",
-      previewHeight: ""
-    };
-
-    const toolbox = document.querySelector("#toolbox");
-    const workspaceDrop = document.querySelector("#workspaceDrop");
-    const workspaceList = document.querySelector("#workspaceList");
-    const emptyState = document.querySelector("#emptyState");
-    const htmlOutput = document.querySelector("#htmlOutput");
-    const htmlLineNumbers = document.querySelector("#htmlLineNumbers");
-    const preview = document.querySelector("#preview");
-    const previewPane = document.querySelector(".preview-pane");
-    const previewSplitter = document.querySelector("#previewSplitter");
-    const previewStage = document.querySelector("#previewStage");
-    const platformMode = document.querySelector("#platformMode");
-    const iosMode = document.querySelector("#iosMode");
-    const iosFactors = document.querySelector("#iosFactors");
-    const iosFontScale = document.querySelector("#iosFontScale");
-    const iosDarkMode = document.querySelector("#iosDarkMode");
-    const iosHideImages = document.querySelector("#iosHideImages");
-    const iosDisableLinks = document.querySelector("#iosDisableLinks");
-    const iosStrictAttributed = document.querySelector("#iosStrictAttributed");
-    const androidMode = document.querySelector("#androidMode");
-    const androidFactors = document.querySelector("#androidFactors");
-    const androidFontScale = document.querySelector("#androidFontScale");
-    const androidDarkMode = document.querySelector("#androidDarkMode");
-    const androidHideImages = document.querySelector("#androidHideImages");
-    const androidDisableLinks = document.querySelector("#androidDisableLinks");
-    const androidStrictHtml = document.querySelector("#androidStrictHtml");
-    const previewWidth = document.querySelector("#previewWidth");
-    const previewHeight = document.querySelector("#previewHeight");
-    const codeLabel = document.querySelector("#codeLabel");
-    const copyState = document.querySelector("#copyState");
-    const blockInfoModal = document.querySelector("#blockInfoModal");
-    const blockInfoTitle = document.querySelector("#blockInfoTitle");
-    const blockInfoPreview = document.querySelector("#blockInfoPreview");
-    const blockInfoClose = document.querySelector("#blockInfoClose");
-    const openBlockLibrary = document.querySelector("#openBlockLibrary");
-    const blockLibraryModal = document.querySelector("#blockLibraryModal");
-    const blockLibraryList = document.querySelector("#blockLibraryList");
-    const blockLibraryClose = document.querySelector("#blockLibraryClose");
-    const favoriteStorageKey = "scratch-html-builder-favorites";
-    let reverseTimer = null;
-    let isResizingPreview = false;
-    let favoriteBlockTypes = new Set(loadFavoriteBlockTypes());
-
-    function createBlock(type) {
-      const definition = blockTypes.find(block => block.type === type);
-      const values = {};
-      definition.fields.forEach(field => {
-        values[field.key] = field.control === "select" ? field.value : "";
-      });
-
-      return {
-        id: crypto.randomUUID(),
-        type,
-        values
-      };
-    }
-
-    function createBlockWithValues(type, values) {
-      const block = createBlock(type);
-      block.values = { ...block.values, ...values };
-      return block;
-    }
-
-    function loadFavoriteBlockTypes() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(favoriteStorageKey) || "null");
-        if (Array.isArray(saved)) return saved;
-      } catch {
-        localStorage.removeItem(favoriteStorageKey);
-      }
-
-      return [];
-    }
-
-    function saveFavoriteBlockTypes() {
-      localStorage.setItem(favoriteStorageKey, JSON.stringify([...favoriteBlockTypes]));
-    }
-
-    function renderToolbox() {
-      toolbox.innerHTML = "";
-      const favoriteDefinitions = blockTypes.filter(definition => !definition.hiddenFromToolbox && favoriteBlockTypes.has(definition.type));
-      if (!favoriteDefinitions.length) {
-        toolbox.innerHTML = `<div class="toolbox-empty">點左上漢堡，按愛心加入常用積木</div>`;
-        return;
-      }
-
-      favoriteDefinitions.forEach(definition => {
-        const node = document.createElement("article");
-        node.className = `block ${definition.type}`;
-        node.draggable = true;
-        node.dataset.type = definition.type;
-        node.innerHTML = `
-          <div class="block-name"><span>${definition.icon}</span><span>${definition.name}</span></div>
-          <button class="info-button" type="button" data-info-type="${definition.type}" aria-label="查看 ${definition.name} 效果" title="查看效果">i</button>
-        `;
-        node.addEventListener("dragstart", event => {
-          state.draggedSourceType = definition.type;
-          state.draggedBlockId = null;
-          state.dragPreviewIndex = null;
-          event.dataTransfer.effectAllowed = "copy";
-          event.dataTransfer.setData("text/plain", definition.type);
-        });
-        node.addEventListener("dragend", () => {
-          clearDropPreview();
-          state.draggedSourceType = null;
-        });
-        node.addEventListener("click", () => {
-          insertBlock(definition.type, state.blocks.length);
-        });
-        node.querySelector(".info-button").addEventListener("click", event => {
-          event.stopPropagation();
-          showBlockInfo(definition);
-        });
-        toolbox.appendChild(node);
-      });
-    }
-
-    function renderBlockLibrary() {
-      blockLibraryList.innerHTML = "";
-      blockTypes.filter(definition => !definition.hiddenFromToolbox).forEach(definition => {
-        const node = document.createElement("article");
-        node.className = `block ${definition.type}`;
-        node.draggable = true;
-        node.dataset.type = definition.type;
-        const isFavorite = favoriteBlockTypes.has(definition.type);
-        node.innerHTML = `
-          <div class="block-name"><span>${definition.icon}</span><span>${definition.name}</span></div>
-          <button class="heart-button ${isFavorite ? "is-favorite" : ""}" type="button" data-heart-type="${definition.type}" aria-label="${isFavorite ? "從外層移除" : "加入外層"} ${definition.name}" title="${isFavorite ? "已在外層列表" : "加入外層列表"}">♥</button>
-          <button class="info-button" type="button" data-info-type="${definition.type}" aria-label="查看 ${definition.name} 效果" title="查看效果">i</button>
-        `;
-
-        node.addEventListener("dragstart", event => {
-          state.draggedSourceType = definition.type;
-          state.draggedBlockId = null;
-          state.dragPreviewIndex = null;
-          event.dataTransfer.effectAllowed = "copy";
-          event.dataTransfer.setData("text/plain", definition.type);
-        });
-        node.addEventListener("dragend", () => {
-          clearDropPreview();
-          state.draggedSourceType = null;
-        });
-
-        node.addEventListener("click", () => {
-          insertBlock(definition.type, state.blocks.length);
-        });
-
-        node.querySelector(".heart-button").addEventListener("click", event => {
-          event.stopPropagation();
-          toggleFavoriteBlock(definition.type);
-        });
-
-        node.querySelector(".info-button").addEventListener("click", event => {
-          event.stopPropagation();
-          showBlockInfo(definition);
-        });
-
-        blockLibraryList.appendChild(node);
-      });
-    }
-
-    function toggleFavoriteBlock(type) {
-      if (favoriteBlockTypes.has(type)) {
-        favoriteBlockTypes.delete(type);
-      } else {
-        favoriteBlockTypes.add(type);
-      }
-
-      saveFavoriteBlockTypes();
-      renderToolbox();
-      renderBlockLibrary();
-    }
-
-    function showBlockLibrary() {
-      renderBlockLibrary();
-      blockLibraryModal.hidden = false;
-      blockLibraryClose.focus();
-    }
-
-    function hideBlockLibrary() {
-      blockLibraryModal.hidden = true;
-    }
-
-    function showBlockInfo(definition) {
-      setActiveInfoButton(definition.type);
-      const values = {};
-      definition.fields.forEach(field => {
-        values[field.key] = field.value;
-      });
-
-      const html = definition.toHtml(values);
-      blockInfoTitle.textContent = `${definition.icon} ${definition.name}`;
-      blockInfoPreview.srcdoc = wrapBodyHtml(html);
-      blockInfoModal.hidden = false;
-      blockInfoClose.focus();
-    }
-
-    function hideBlockInfo() {
-      blockInfoModal.hidden = true;
-      blockInfoPreview.srcdoc = "";
-      setActiveInfoButton(null);
-    }
-
-    function setActiveInfoButton(type) {
-      const isInfoMode = Boolean(type);
-      document.querySelectorAll(".info-button").forEach(button => {
-        button.classList.toggle("is-available", isInfoMode);
-        button.classList.toggle("is-active", button.dataset.infoType === type);
-      });
-    }
-
-    function renderWorkspace() {
-      workspaceList.innerHTML = "";
-      emptyState.hidden = state.blocks.length > 0;
-
-      state.blocks.forEach(block => {
-        const definition = blockTypes.find(item => item.type === block.type);
-        const card = document.createElement("article");
-        card.className = `block workspace-card ${definition.type}`;
-        card.draggable = true;
-        card.dataset.id = block.id;
-
-        const fields = definition.fields.map(field => renderField(field, block.values[field.key])).join("");
-        const note = getBlockNote(block.type);
-        card.innerHTML = `
-          <div class="card-actions">
-            <div class="block-name"><span>${definition.icon}</span><span>${definition.name}</span></div>
-            <button class="icon-button" type="button" title="刪除" aria-label="刪除">×</button>
-          </div>
-          ${note}
-          <div class="block-fields">${fields}</div>
-        `;
-
-        card.querySelector(".icon-button").addEventListener("click", () => {
-          state.blocks = state.blocks.filter(item => item.id !== block.id);
-          renderWorkspace();
-          updateOutput();
-        });
-
-        card.querySelectorAll("[data-field]:not([data-repeat-field])").forEach(input => {
-          input.addEventListener("input", event => {
-            block.values[event.target.dataset.field] = event.target.value;
-            updateOutput();
-          });
-        });
-
-        card.querySelectorAll("[data-repeat-field]").forEach(input => {
-          input.addEventListener("input", event => {
-            block.values[event.target.dataset.repeatField] = collectRepeatValues(card, event.target.dataset.repeatField);
-            updateOutput();
-          });
-        });
-
-        card.querySelectorAll("[data-repeat-add]").forEach(button => {
-          button.addEventListener("click", event => {
-            const field = event.currentTarget.dataset.repeatAdd;
-            block.values[field] = appendRepeatValue(block.values[field]);
-            renderWorkspace();
-            updateOutput();
-          });
-        });
-
-        card.querySelectorAll("[data-repeat-remove]").forEach(button => {
-          button.addEventListener("click", event => {
-            const field = event.currentTarget.dataset.repeatRemove;
-            const index = Number(event.currentTarget.dataset.repeatIndex);
-            const values = splitRepeatValues(block.values[field]);
-            values.splice(index, 1);
-            block.values[field] = values.length ? values.join("\n") : "";
-            renderWorkspace();
-            updateOutput();
-          });
-        });
-
-        card.addEventListener("dragstart", event => {
-          state.draggedBlockId = block.id;
-          state.draggedSourceType = null;
-          state.dragPreviewIndex = null;
-          card.classList.add("dragging");
-          event.dataTransfer.effectAllowed = "move";
-          event.dataTransfer.setData("text/plain", block.id);
-        });
-
-        card.addEventListener("dragend", () => {
-          card.classList.remove("dragging");
-          clearDropPreview();
-          state.draggedBlockId = null;
-          state.draggedSourceType = null;
-        });
-
-        workspaceList.appendChild(card);
-      });
-    }
-
-    function getBlockNote(type) {
-      if (type === "unsupported") {
-        return `<div class="hint" style="color: rgba(255,255,255,.86); white-space: normal;">目前沒有對應積木，可依這個標籤新增一種積木。</div>`;
-      }
-
-      if (type === "html-error") {
-        return `<div class="hint" style="color: rgba(255,255,255,.9); white-space: normal;">貼上的 HTML 有語法問題，請先修正標籤再反推方塊。</div>`;
-      }
-
-      return "";
-    }
-
-    function renderField(field, value) {
-      if (field.control === "textarea") {
-        if (!field.repeatable) {
-          return `
-            <label>${field.label}
-              <textarea data-field="${field.key}">${escapeHtml(value)}</textarea>
-            </label>
-          `;
-        }
-
-        const rows = splitRepeatValues(value);
-        return `
-          <div class="repeat-field">
-            <div class="repeat-field-label">${field.label}</div>
-            <div class="repeat-rows">
-              ${rows.map((row, index) => `
-                <div class="repeat-row">
-                  <input data-repeat-field="${field.key}" data-repeat-index="${index}" value="${escapeAttribute(row)}">
-                  <button class="repeat-remove" type="button" data-repeat-remove="${field.key}" data-repeat-index="${index}" title="刪除此列" aria-label="刪除此列">×</button>
-                </div>
-              `).join("")}
-            </div>
-            <button class="repeat-add" type="button" data-repeat-add="${field.key}" title="新增一列" aria-label="新增一列">+</button>
-          </div>
-        `;
-      }
-
-      if (field.control === "select") {
-        const options = field.options
-          .map(item => {
-            const option = typeof item === "string" ? { value: item, label: item } : item;
-            const label = field.placeholder && option.value === field.value ? field.placeholder : option.label;
-            return `<option value="${escapeAttribute(option.value)}" ${option.value === value ? "selected" : ""}>${escapeHtml(label)}</option>`;
-          })
-          .join("");
-        const labelText = field.label ? `${field.label}\n            ` : "";
-        const labelClass = field.label ? "inline-field" : "inline-field no-label";
-        return `
-          <label class="${labelClass}">${labelText}
-            <select data-field="${field.key}">${options}</select>
-          </label>
-        `;
-      }
-
-      return `
-        <label class="inline-field">${field.label}
-          <input data-field="${field.key}" value="${escapeAttribute(value)}" ${field.placeholder ? `placeholder="${escapeAttribute(field.placeholder)}"` : ""}>
-        </label>
-      `;
-    }
-
-    function splitRepeatValues(value) {
-      const rows = String(value || "").split("\n");
-      return rows.length ? rows : [""];
-    }
-
-    function appendRepeatValue(value) {
-      return [...splitRepeatValues(value), ""].join("\n");
-    }
-
-    function collectRepeatValues(card, field) {
-      return [...card.querySelectorAll(`[data-repeat-field="${field}"]`)]
-        .map(input => input.value)
-        .join("\n");
-    }
-
-    function getDropIndex(event) {
-      const cards = [...workspaceList.querySelectorAll(".workspace-card:not(.dragging)")];
-      const nextCard = cards.find(card => {
-        const rect = card.getBoundingClientRect();
-        return event.clientY < rect.top + rect.height / 2;
-      });
-      return nextCard ? state.blocks.findIndex(block => block.id === nextCard.dataset.id) : state.blocks.length;
-    }
-
-    function updateDropPreview(index) {
-      if (state.draggedBlockId) {
-        const fromIndex = state.blocks.findIndex(block => block.id === state.draggedBlockId);
-        if (index === fromIndex || index === fromIndex + 1) {
-          clearDropPreview();
-          return;
-        }
-      }
-
-      if (state.dragPreviewIndex === index && workspaceList.querySelector(".drop-placeholder")) return;
-
-      clearDropPreview();
-      state.dragPreviewIndex = index;
-
-      const placeholder = document.createElement("div");
-      placeholder.className = "drop-placeholder";
-      placeholder.setAttribute("aria-hidden", "true");
-
-      const cards = [...workspaceList.querySelectorAll(".workspace-card:not(.dragging)")];
-      const targetCard = cards.find(card => {
-        const cardIndex = state.blocks.findIndex(block => block.id === card.dataset.id);
-        return cardIndex >= index;
-      });
-
-      if (targetCard) {
-        workspaceList.insertBefore(placeholder, targetCard);
-      } else {
-        workspaceList.appendChild(placeholder);
+    function showLesson(number) {
+      tabs.forEach((tab) => tab.classList.toggle("active", tab.dataset.target === String(number)));
+      panels.forEach((panel) => panel.classList.toggle("active", panel.dataset.lesson === String(number)));
+      progressText.textContent = `第 ${number} / 5 課`;
+      progressBar.style.width = `${number * 20}%`;
+      document.getElementById("promptLab").classList.toggle("show", String(number) === "5");
+      const activePanel = document.querySelector(`.lesson-panel[data-lesson="${number}"]`);
+      if (activePanel) {
+        activePanel.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
 
-    function clearDropPreview() {
-      workspaceList.querySelector(".drop-placeholder")?.remove();
-      state.dragPreviewIndex = null;
-    }
-
-    function insertBlock(type, index) {
-      state.blocks.splice(index, 0, createBlock(type));
-      renderWorkspace();
-      updateOutput();
-    }
-
-    function moveBlock(id, index) {
-      const fromIndex = state.blocks.findIndex(block => block.id === id);
-      if (fromIndex < 0) return;
-
-      const [block] = state.blocks.splice(fromIndex, 1);
-      const adjustedIndex = fromIndex < index ? index - 1 : index;
-      state.blocks.splice(adjustedIndex, 0, block);
-      renderWorkspace();
-      updateOutput();
-    }
-
-    function generateBodyHtml() {
-      return state.blocks.map(block => {
-        const definition = blockTypes.find(item => item.type === block.type);
-        return definition.toHtml(block.values);
-      }).join("\n");
-    }
-
-    function generateModeHtml() {
-      const html = generateBodyHtml();
-      if (state.platformMode === "ios" && state.iosMode === "textview") {
-        return toTextViewAttributeHtml(html, "textview");
-      }
-      if (state.platformMode === "ios" && state.iosMode === "label") {
-        return toTextViewAttributeHtml(html, "label");
-      }
-      if (state.platformMode === "ios" && state.iosMode === "swiftui-attributed") {
-        return toSwiftUIAttributedHtml(html);
-      }
-      if (state.platformMode === "android" && state.androidMode === "textview") {
-        return toAndroidTextViewHtml(html);
-      }
-      return html;
-    }
-
-    function generateFullHtml() {
-      const body = generateModeHtml();
-      return wrapBodyHtml(body);
-    }
-
-    function wrapBodyHtml(body) {
-      const css = getPreviewCss();
-      return `<!doctype html>
-<html lang="zh-Hant">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>我的 HTML 頁面</title>
-  <style>
-    body {
-${indent(css.body, 6)}
-    }
-
-    h1, h2, h3 {
-      line-height: 1.2;
-      margin: 0 0 16px;
-    }
-
-    p, ul, .feature, label {
-      margin: 0 0 20px;
-    }
-
-    img {
-      display: block;
-      width: 100%;
-      max-height: 360px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin: 0 0 22px;
-    }
-
-    .button {
-      display: inline-block;
-      padding: 10px 14px;
-      color: #fff;
-      background: #2878d8;
-      border-radius: 7px;
-      text-decoration: none;
-      font-weight: 700;
-      margin: 0 0 22px;
-    }
-
-    .feature {
-      padding: 20px;
-      background: #edf6f1;
-      border: 1px solid #cfe5d9;
-      border-radius: 8px;
-    }
-
-    label {
-      display: grid;
-      gap: 8px;
-      font-weight: 700;
-    }
-
-    input {
-      max-width: 360px;
-      padding: 10px 12px;
-      border: 1px solid #cbd6e3;
-      border-radius: 7px;
-    }
-
-${css.extra}
-  </style>
-</head>
-<body>
-${indent(body, 2)}
-</body>
-</html>`;
-    }
-
-    function updateOutput() {
-      htmlOutput.value = generateBodyHtml();
-      updateLineNumbers();
-      clearGlobalCodeErrors();
-      updateModeUi();
-      preview.srcdoc = generateFullHtml();
-    }
-
-    function showGlobalCodeErrors(errors) {
-    }
-
-    function clearGlobalCodeErrors() {
-    }
-
-    function updateLineNumbers() {
-      const lineCount = htmlOutput.value.split("\n").length || 1;
-      htmlLineNumbers.textContent = Array.from({ length: lineCount }, (_, index) => index + 1).join("\n");
-    }
-
-    function syncLineNumberScroll() {
-      htmlLineNumbers.scrollTop = htmlOutput.scrollTop;
-    }
-
-    function updateModeUi() {
-      const isIos = state.platformMode === "ios";
-      const isAndroid = state.platformMode === "android";
-      iosMode.hidden = !isIos;
-      iosFactors.hidden = !isIos;
-      androidMode.hidden = !isAndroid;
-      androidFactors.hidden = !isAndroid;
-      platformMode.value = state.platformMode;
-      iosMode.value = state.iosMode;
-      iosFontScale.value = state.iosFontScale;
-      iosDarkMode.checked = state.iosDarkMode;
-      iosHideImages.checked = state.iosHideImages;
-      iosDisableLinks.checked = state.iosDisableLinks;
-      iosStrictAttributed.checked = state.iosStrictAttributed;
-      androidMode.value = state.androidMode;
-      androidFontScale.value = state.androidFontScale;
-      androidDarkMode.checked = state.androidDarkMode;
-      androidHideImages.checked = state.androidHideImages;
-      androidDisableLinks.checked = state.androidDisableLinks;
-      androidStrictHtml.checked = state.androidStrictHtml;
-      previewStage.className = `preview-stage ${state.platformMode}`;
-      previewWidth.value = state.previewWidth;
-      previewHeight.value = state.previewHeight;
-      previewStage.classList.toggle("sized", Boolean(state.previewWidth || state.previewHeight));
-
-      if (state.previewWidth) {
-        previewStage.style.setProperty("--preview-width", `${state.previewWidth}px`);
-      } else {
-        previewStage.style.removeProperty("--preview-width");
-      }
-
-      if (state.previewHeight) {
-        previewStage.style.setProperty("--preview-height", `${state.previewHeight}px`);
-      } else {
-        previewStage.style.removeProperty("--preview-height");
-      }
-
-      if (isIos && state.iosMode === "textview") {
-        previewStage.classList.add("ios-textview");
-        codeLabel.textContent = "HTML";
-        htmlOutput.placeholder = "貼上 UITextView attributedText HTML 片段，會自動反推工作區方塊";
-      } else if (isIos && state.iosMode === "label") {
-        previewStage.classList.add("ios-label");
-        codeLabel.textContent = "HTML";
-        htmlOutput.placeholder = "貼上 UILabel attributedText HTML 片段，會自動反推工作區方塊";
-      } else if (isIos && state.iosMode === "swiftui-attributed") {
-        previewStage.classList.add("ios-swiftui");
-        codeLabel.textContent = "HTML";
-        htmlOutput.placeholder = "貼上 SwiftUI AttributedString HTML 片段，會自動反推工作區方塊";
-      } else if (isIos && state.iosMode === "safari") {
-        previewStage.classList.add("ios-safari");
-        codeLabel.textContent = "HTML";
-        htmlOutput.placeholder = "貼上 SafariViewController HTML 片段，會自動反推工作區方塊";
-      } else if (isIos) {
-        codeLabel.textContent = "HTML";
-        htmlOutput.placeholder = "貼上 WKWebView HTML 片段，會自動反推工作區方塊";
-      } else if (isAndroid && state.androidMode === "textview") {
-        previewStage.classList.add("android-textview");
-        codeLabel.textContent = "HTML";
-        htmlOutput.placeholder = "貼上 TextView HtmlCompat HTML 片段，會自動反推工作區方塊";
-      } else if (isAndroid && state.androidMode === "compose-webview") {
-        previewStage.classList.add("android-compose");
-        codeLabel.textContent = "HTML";
-        htmlOutput.placeholder = "貼上 Compose WebView HTML 片段，會自動反推工作區方塊";
-      } else if (state.platformMode === "android") {
-        codeLabel.textContent = "HTML";
-        htmlOutput.placeholder = "貼上 Android WebView HTML 片段，會自動反推工作區方塊";
-      } else {
-        codeLabel.textContent = "HTML";
-        htmlOutput.placeholder = "貼上 HTML 片段，會自動反推工作區方塊";
-      }
-    }
-
-    function getPreviewCss() {
-      if (state.platformMode === "ios" && state.iosMode === "textview") {
-        const theme = getIosTheme("#f9fafc");
-        return {
-          body: [
-            "max-width: 100%;",
-            "margin: 0;",
-            "padding: 20px;",
-            `color: ${theme.color};`,
-            `background: ${theme.background};`,
-            "font-family: -apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif;",
-            `font-size: ${scaleIosFont(17)}px;`,
-            "line-height: 1.58;"
-          ].join("\n"),
-          extra: withIosFactors([
-            "    a { color: #0a84ff; }",
-            "    img { display: none; }",
-            "    .button { color: #0a84ff; background: transparent; padding: 0; margin: 0 0 20px; }",
-            "    .feature { background: transparent; border: 0; padding: 0; }"
-          ])
-        };
-      }
-
-      if (state.platformMode === "ios" && state.iosMode === "label") {
-        const theme = getIosTheme("#fbfbfd");
-        return {
-          body: [
-            "max-width: 100%;",
-            "margin: 0;",
-            "padding: 18px;",
-            `color: ${theme.color};`,
-            `background: ${theme.background};`,
-            "font-family: -apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif;",
-            `font-size: ${scaleIosFont(16)}px;`,
-            "line-height: 1.42;"
-          ].join("\n"),
-          extra: withIosFactors([
-            "    h1, h2, h3 { font-size: 18px; margin: 0 0 10px; }",
-            "    p, ul, .feature, label { margin: 0 0 10px; }",
-            "    a { color: #0a84ff; text-decoration: underline; }",
-            "    img, input { display: none; }",
-            "    .button { color: #0a84ff; background: transparent; padding: 0; }",
-            "    .feature { background: transparent; border: 0; padding: 0; }"
-          ])
-        };
-      }
-
-      if (state.platformMode === "ios" && state.iosMode === "swiftui-attributed") {
-        const theme = getIosTheme("#ffffff");
-        return {
-          body: [
-            "max-width: 100%;",
-            "margin: 0;",
-            "padding: 24px 20px;",
-            `color: ${theme.color};`,
-            `background: ${theme.background};`,
-            "font-family: -apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif;",
-            `font-size: ${scaleIosFont(17)}px;`,
-            "line-height: 1.55;"
-          ].join("\n"),
-          extra: withIosFactors([
-            "    a { color: #0a84ff; text-decoration: underline; }",
-            "    img, input { display: none; }",
-            "    .button { color: #0a84ff; background: transparent; padding: 0; }",
-            "    .feature { background: transparent; border: 0; padding: 0; }"
-          ])
-        };
-      }
-
-      if (state.platformMode === "ios" && state.iosMode === "safari") {
-        const theme = getIosTheme("#ffffff");
-        return {
-          body: [
-            "max-width: 100%;",
-            "margin: 0;",
-            "padding: 32px 22px;",
-            `color: ${theme.color};`,
-            `background: ${theme.background};`,
-            "font-family: -apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif;",
-            `font-size: ${scaleIosFont(17)}px;`,
-            "line-height: 1.65;"
-          ].join("\n"),
-          extra: withIosFactors(["    a { color: #0a84ff; }"])
-        };
-      }
-
-      if (state.platformMode === "ios") {
-        const theme = getIosTheme("#ffffff");
-        return {
-          body: [
-            "max-width: 100%;",
-            "margin: 0;",
-            "padding: 28px 20px;",
-            `color: ${theme.color};`,
-            `background: ${theme.background};`,
-            "font-family: -apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif;",
-            `font-size: ${scaleIosFont(17)}px;`,
-            "line-height: 1.65;"
-          ].join("\n"),
-          extra: withIosFactors(["    a { color: #0a84ff; }"])
-        };
-      }
-
-      if (state.platformMode === "android" && state.androidMode === "textview") {
-        const theme = getAndroidTheme();
-        return {
-          body: [
-            "max-width: 100%;",
-            "margin: 0;",
-            "padding: 22px 18px;",
-            `color: ${theme.color};`,
-            `background: ${theme.background};`,
-            "font-family: Roboto, Arial, sans-serif;",
-            `font-size: ${scaleAndroidFont(16)}px;`,
-            "line-height: 1.55;"
-          ].join("\n"),
-          extra: withAndroidFactors([
-            "    h1, h2, h3 { font-weight: 700; }",
-            "    a { color: #1a73e8; text-decoration: underline; }",
-            "    img, input { display: none; }",
-            "    .button { color: #1a73e8; background: transparent; padding: 0; }",
-            "    .feature { background: transparent; border: 0; padding: 0; }"
-          ])
-        };
-      }
-
-      if (state.platformMode === "android" && state.androidMode === "compose-webview") {
-        const theme = getAndroidTheme();
-        return {
-          body: [
-            "max-width: 100%;",
-            "margin: 0;",
-            "padding: 24px 18px;",
-            `color: ${theme.color};`,
-            `background: ${theme.background};`,
-            "font-family: Roboto, Arial, sans-serif;",
-            `font-size: ${scaleAndroidFont(16)}px;`,
-            "line-height: 1.62;"
-          ].join("\n"),
-          extra: withAndroidFactors(["    a { color: #2962ff; }"])
-        };
-      }
-
-      if (state.platformMode === "android") {
-        const theme = getAndroidTheme();
-        return {
-          body: [
-            "max-width: 100%;",
-            "margin: 0;",
-            "padding: 24px 18px;",
-            `color: ${theme.color};`,
-            `background: ${theme.background};`,
-            "font-family: Roboto, Arial, sans-serif;",
-            `font-size: ${scaleAndroidFont(16)}px;`,
-            "line-height: 1.6;"
-          ].join("\n"),
-          extra: withAndroidFactors(["    a { color: #1a73e8; }"])
-        };
-      }
-
-      return {
-        body: [
-          "max-width: 880px;",
-          "margin: 0 auto;",
-          "padding: 40px 24px;",
-          "color: #1b2430;",
-          "background: #ffffff;",
-          "font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;",
-          "line-height: 1.7;"
-        ].join("\n"),
-        extra: ""
-      };
-    }
-
-    function getAndroidTheme() {
-      return state.androidDarkMode
-        ? { background: "#121212", color: "#e8eaed" }
-        : { background: "#ffffff", color: "#202124" };
-    }
-
-    function getIosTheme(lightBackground) {
-      return state.iosDarkMode
-        ? { background: "#000000", color: "#f2f2f7" }
-        : { background: lightBackground, color: "#111827" };
-    }
-
-    function scaleIosFont(size) {
-      return Math.round(size * Number(state.iosFontScale) * 10) / 10;
-    }
-
-    function withIosFactors(lines) {
-      const extra = [...lines];
-      if (state.iosDarkMode) {
-        extra.push("    .feature { background: #1c1c1e; border-color: #38383a; }");
-        extra.push("    input { background: #1c1c1e; color: #f2f2f7; border-color: #48484a; }");
-      }
-      if (state.iosHideImages) {
-        extra.push("    img { display: none !important; }");
-      }
-      if (state.iosDisableLinks) {
-        extra.push("    a { color: inherit !important; text-decoration: none !important; pointer-events: none; }");
-      }
-      if (state.iosStrictAttributed) {
-        extra.push("    img, input { display: none !important; }");
-        extra.push("    .feature { background: transparent !important; border: 0 !important; padding: 0 !important; }");
-      }
-      return extra.join("\n");
-    }
-
-    function scaleAndroidFont(size) {
-      return Math.round(size * Number(state.androidFontScale) * 10) / 10;
-    }
-
-    function withAndroidFactors(lines) {
-      const extra = [...lines];
-      if (state.androidDarkMode) {
-        extra.push("    .feature { background: #1f2937; border-color: #374151; }");
-        extra.push("    input { background: #1f2937; color: #e8eaed; border-color: #4b5563; }");
-      }
-      if (state.androidHideImages) {
-        extra.push("    img { display: none !important; }");
-      }
-      if (state.androidDisableLinks) {
-        extra.push("    a { color: inherit !important; text-decoration: none !important; pointer-events: none; }");
-      }
-      return extra.join("\n");
-    }
-
-    function toTextViewAttributeHtml(html, mode = "textview") {
-      const parser = new DOMParser();
-      const parsed = parser.parseFromString(html, "text/html");
-      parsed.body.querySelectorAll("h1, h2, h3").forEach(node => {
-        const tagName = node.tagName.toLowerCase();
-        const baseSize = mode === "label" ? 18 : tagName === "h1" ? 24 : tagName === "h2" ? 21 : 18;
-        const size = scaleIosFont(baseSize);
-        const margin = mode === "label" ? "0 0 8px" : "0 0 12px";
-        node.setAttribute("style", `font-size: ${size}px; font-weight: 700; margin: ${margin};`);
-      });
-      parsed.body.querySelectorAll("p, li").forEach(node => {
-        const size = scaleIosFont(mode === "label" ? 16 : 17);
-        const lineHeight = mode === "label" ? 1.42 : 1.58;
-        node.setAttribute("style", `font-size: ${size}px; line-height: ${lineHeight}; margin: 0 0 10px;`);
-      });
-      parsed.body.querySelectorAll("ul").forEach(node => {
-        const margin = mode === "label" ? "0 0 10px" : "0 0 14px";
-        node.setAttribute("style", `margin: ${margin}; padding-left: 22px;`);
-      });
-      parsed.body.querySelectorAll("a").forEach(node => {
-        node.setAttribute("style", "color: #0a84ff; text-decoration: underline;");
-      });
-      parsed.body.querySelectorAll("section").forEach(node => {
-        node.setAttribute("style", "margin: 0 0 16px;");
-      });
-      if (state.iosDarkMode) {
-        parsed.body.querySelectorAll("p, li, h1, h2, h3").forEach(node => {
-          node.setAttribute("style", `${node.getAttribute("style") || ""} color: #f2f2f7;`);
-        });
-      }
-      if (state.iosDisableLinks) {
-        parsed.body.querySelectorAll("a").forEach(node => {
-          const span = parsed.createElement("span");
-          span.textContent = node.textContent;
-          node.replaceWith(span);
-        });
-      }
-      if (state.iosHideImages || state.iosStrictAttributed || mode === "label") {
-        parsed.body.querySelectorAll("img").forEach(node => node.remove());
-      }
-      parsed.body.querySelectorAll("input").forEach(node => node.remove());
-      if (state.iosStrictAttributed) {
-        parsed.body.querySelectorAll("section").forEach(section => {
-          const div = parsed.createElement("div");
-          div.innerHTML = section.innerHTML;
-          section.replaceWith(div);
-        });
-        parsed.body.querySelectorAll("[class]").forEach(node => node.removeAttribute("class"));
-      }
-      return parsed.body.innerHTML.trim();
-    }
-
-    function toSwiftUIAttributedHtml(html) {
-      const parser = new DOMParser();
-      const parsed = parser.parseFromString(html, "text/html");
-
-      parsed.body.querySelectorAll("section").forEach(section => {
-        const div = parsed.createElement("div");
-        div.innerHTML = section.innerHTML;
-        section.replaceWith(div);
-      });
-
-      parsed.body.querySelectorAll("a").forEach(node => {
-        node.removeAttribute("class");
-        node.setAttribute("style", "color: #0a84ff; text-decoration: underline;");
-      });
-
-      if (state.iosDisableLinks) {
-        parsed.body.querySelectorAll("a").forEach(node => {
-          const span = parsed.createElement("span");
-          span.textContent = node.textContent;
-          node.replaceWith(span);
-        });
-      }
-      if (state.iosHideImages || state.iosStrictAttributed) {
-        parsed.body.querySelectorAll("img").forEach(node => node.remove());
-      }
-      parsed.body.querySelectorAll("input").forEach(node => node.remove());
-      parsed.body.querySelectorAll("[class]").forEach(node => node.removeAttribute("class"));
-      if (state.iosStrictAttributed) {
-        parsed.body.querySelectorAll("[style]").forEach(node => {
-          if (node.tagName.toLowerCase() !== "a") {
-            node.removeAttribute("style");
-          }
-        });
-      }
-      return parsed.body.innerHTML.trim();
-    }
-
-    function toAndroidTextViewHtml(html) {
-      const parser = new DOMParser();
-      const parsed = parser.parseFromString(html, "text/html");
-
-      parsed.body.querySelectorAll("section").forEach(section => {
-        const div = parsed.createElement("div");
-        div.innerHTML = section.innerHTML;
-        section.replaceWith(div);
-      });
-
-      parsed.body.querySelectorAll("a").forEach(node => {
-        node.removeAttribute("class");
-      });
-
-      if (state.androidDisableLinks) {
-        parsed.body.querySelectorAll("a").forEach(node => {
-          const span = parsed.createElement("span");
-          span.textContent = node.textContent;
-          node.replaceWith(span);
-        });
-      }
-      if (state.androidHideImages || state.androidStrictHtml) {
-        parsed.body.querySelectorAll("img").forEach(node => node.remove());
-      }
-      parsed.body.querySelectorAll("input").forEach(node => node.remove());
-      parsed.body.querySelectorAll("[style], [class]").forEach(node => {
-        node.removeAttribute("style");
-        node.removeAttribute("class");
-      });
-      if (state.androidStrictHtml) {
-        parsed.body.querySelectorAll("table, iframe, video, audio, form, button").forEach(node => {
-          const fallback = parsed.createElement("p");
-          fallback.textContent = cleanText(node.textContent);
-          node.replaceWith(fallback);
-        });
-      }
-
-      return parsed.body.innerHTML.trim();
-    }
-
-    function formatHtmlSnippet(html) {
-      if (!html.trim()) return "";
-
-      const parser = new DOMParser();
-      const parsed = parser.parseFromString(html, "text/html");
-      return [...parsed.body.childNodes]
-        .map(node => formatNode(node, 0))
-        .filter(Boolean)
-        .join("\n");
-    }
-
-    function formatNode(node, depth) {
-      if (node.nodeType === Node.TEXT_NODE) {
-        return node.textContent.trim() ? `${"  ".repeat(depth)}${node.textContent.trim()}` : "";
-      }
-
-      if (node.nodeType !== Node.ELEMENT_NODE) return "";
-
-      const tagName = node.tagName.toLowerCase();
-      const attrs = formatAttributes(node);
-      const openTag = `<${tagName}${attrs}>`;
-      const closeTag = `</${tagName}>`;
-      const padding = "  ".repeat(depth);
-
-      if (["br", "hr", "img", "input", "meta", "link"].includes(tagName)) {
-        return `${padding}${openTag}`;
-      }
-
-      if (isInlineOnly(node)) {
-        return `${padding}${openTag}${node.innerHTML.trim()}${closeTag}`;
-      }
-
-      const children = [...node.childNodes]
-        .map(child => formatNode(child, depth + 1))
-        .filter(Boolean)
-        .join("\n");
-
-      return children
-        ? `${padding}${openTag}\n${children}\n${padding}${closeTag}`
-        : `${padding}${openTag}${closeTag}`;
-    }
-
-    function formatAttributes(node) {
-      return [...node.attributes]
-        .map(attribute => ` ${attribute.name}="${escapeAttribute(attribute.value)}"`)
-        .join("");
-    }
-
-    function isInlineOnly(node) {
-      const blockTags = new Set(["address", "article", "aside", "blockquote", "div", "dl", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hr", "li", "main", "nav", "ol", "p", "pre", "section", "table", "ul"]);
-      return [...node.children].every(child => !blockTags.has(child.tagName.toLowerCase()));
-    }
-
-    function syncWorkspaceFromHtml(html) {
-      const errors = validateHtmlSyntax(html);
-      if (errors.length) {
-        showGlobalCodeErrors(errors);
-        state.blocks = parseBlocksFromHtmlWithErrors(html, errors);
-        renderWorkspace();
-        preview.srcdoc = wrapBodyHtml(html);
-        return;
-      }
-
-      clearGlobalCodeErrors();
-      const blocks = parseBlocksFromHtml(html);
-      state.blocks = blocks;
-      renderWorkspace();
-      preview.srcdoc = wrapBodyHtml(htmlOutput.value);
-    }
-
-    function validateHtmlSyntax(html) {
-      const errors = [];
-      const stack = [];
-      const voidTags = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"]);
-      const tagPattern = /<!--[\s\S]*?-->|<!doctype[^>]*>|<\/?([a-zA-Z][\w:-]*)(?:\s[^<>]*)?>/gi;
-      let match;
-
-      while ((match = tagPattern.exec(html)) !== null) {
-        const token = match[0];
-        const tagName = match[1] ? match[1].toLowerCase() : "";
-        if (!tagName || token.startsWith("<!--") || token.toLowerCase().startsWith("<!doctype")) continue;
-
-        const isClosing = token.startsWith("</");
-        const isSelfClosing = token.endsWith("/>") || voidTags.has(tagName);
-
-        if (isClosing) {
-          const latest = stack.pop();
-          if (!latest) {
-            errors.push({
-              message: `多了結尾標籤 </${tagName}>。`,
-              index: match.index
-            });
-            continue;
-          }
-
-          if (latest.tagName !== tagName) {
-            errors.push({
-              message: `標籤沒有正確關閉：<${latest.tagName}> 需要先補 </${latest.tagName}>，目前遇到 </${tagName}>。`,
-              index: match.index
-            });
-            const matchingIndex = stack.map(item => item.tagName).lastIndexOf(tagName);
-            if (matchingIndex >= 0) {
-              stack.splice(matchingIndex, 1);
-            }
-          }
-          continue;
-        }
-
-        const parent = stack[stack.length - 1];
-        if (tagName === "li" && (!parent || !["ul", "ol"].includes(parent.tagName))) {
-          errors.push({
-            message: "清單項目 <li> 必須放在 <ul> 或 <ol> 裡。",
-            index: match.index
-          });
-        }
-
-        if (parent && ["ul", "ol"].includes(parent.tagName) && tagName !== "li") {
-          errors.push({
-            message: `清單 <${parent.tagName}> 裡的直接子元素只能是 <li>，目前遇到 <${tagName}>。`,
-            index: match.index
-          });
-        }
-
-        const phrasingOnlyParents = new Set(["p", "h1", "h2", "h3", "h4", "h5", "h6"]);
-        const blockTags = new Set(["address", "article", "aside", "blockquote", "div", "dl", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hr", "li", "main", "nav", "ol", "p", "pre", "section", "table", "ul"]);
-        if (parent && phrasingOnlyParents.has(parent.tagName) && blockTags.has(tagName)) {
-          errors.push({
-            message: `<${parent.tagName}> 裡不能直接放區塊標籤 <${tagName}>。`,
-            index: match.index
-          });
-        }
-
-        if (parent && parent.tagName === "a" && tagName === "a") {
-          errors.push({
-            message: "連結 <a> 裡不能再放另一個 <a>。",
-            index: match.index
-          });
-        }
-
-        if (!isSelfClosing) {
-          stack.push({ tagName, index: match.index });
-        }
-      }
-
-      while (stack.length) {
-        const item = stack.pop();
-        errors.push({
-          message: `缺少結尾標籤 </${item.tagName}>。`,
-          index: item.index
-        });
-      }
-
-      return errors;
-    }
-
-    function getSyntaxErrorMessages(errors) {
-      return errors.map(error => typeof error === "string" ? error : error.message);
-    }
-
-    function parseBlocksFromHtmlWithErrors(html, errors) {
-      const ranges = collectSyntaxErrorRanges(html, errors);
-      if (!ranges.length) {
-        return [
-          createBlockWithValues("html-error", {
-            message: getSyntaxErrorMessages(errors).join("\n"),
-            html
-          })
-        ];
-      }
-
-      const blocks = [];
-      let cursor = 0;
-      ranges.forEach(range => {
-        const before = html.slice(cursor, range.start);
-        blocks.push(...parseBlocksFromHtml(before));
-        blocks.push(createBlockWithValues("html-error", {
-          message: getSyntaxErrorMessages(range.errors).join("\n"),
-          html: html.slice(range.start, range.end).trim()
-        }));
-        cursor = range.end;
-      });
-      blocks.push(...parseBlocksFromHtml(html.slice(cursor)));
-      return blocks.filter(Boolean);
-    }
-
-    function collectSyntaxErrorRanges(html, errors) {
-      const ranges = [];
-      const stack = [];
-      const voidTags = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"]);
-      const tagPattern = /<!--[\s\S]*?-->|<!doctype[^>]*>|<\/?([a-zA-Z][\w:-]*)(?:\s[^<>]*)?>/gi;
-      let match;
-
-      while ((match = tagPattern.exec(html)) !== null) {
-        const token = match[0];
-        const tagName = match[1] ? match[1].toLowerCase() : "";
-        if (!tagName || token.startsWith("<!--") || token.toLowerCase().startsWith("<!doctype")) continue;
-
-        const isClosing = token.startsWith("</");
-        const isSelfClosing = token.endsWith("/>") || voidTags.has(tagName);
-
-        if (isClosing) {
-          const latest = stack.pop();
-          if (!latest) {
-            ranges.push({ start: match.index, end: tagPattern.lastIndex });
-            continue;
-          }
-
-          if (latest.tagName !== tagName) {
-            ranges.push({ start: latest.rootStart, end: tagPattern.lastIndex });
-            const matchingIndex = stack.map(item => item.tagName).lastIndexOf(tagName);
-            if (matchingIndex >= 0) {
-              stack.splice(matchingIndex, 1);
-            }
-          }
-          continue;
-        }
-
-        if (!isSelfClosing) {
-          stack.push({
-            tagName,
-            index: match.index,
-            rootStart: stack.length ? stack[0].rootStart : match.index
-          });
-        }
-      }
-
-      stack.forEach(item => {
-        ranges.push({ start: item.rootStart, end: html.length });
-      });
-
-      errors.forEach(error => {
-        if (typeof error === "string") return;
-        const isAlreadyCovered = ranges.some(range => error.index >= range.start && error.index <= range.end);
-        if (!isAlreadyCovered) {
-          ranges.push(getHtmlTokenRange(html, error.index));
-        }
-      });
-
-      return mergeSyntaxErrorRanges(ranges, errors, html.length);
-    }
-
-    function getHtmlTokenRange(html, index) {
-      const start = html.lastIndexOf("<", index);
-      const close = html.indexOf(">", index);
-      if (start < 0 || close < start) {
-        return { start: index, end: Math.min(index + 1, html.length) };
-      }
-
-      const token = html.slice(start, close + 1);
-      const tagName = token.match(/^<\s*([a-zA-Z][\w:-]*)/)?.[1]?.toLowerCase();
-      if (!tagName || token.startsWith("</") || token.endsWith("/>")) {
-        return { start, end: close + 1 };
-      }
-
-      const voidTags = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"]);
-      if (voidTags.has(tagName)) {
-        return { start, end: close + 1 };
-      }
-
-      const tagPattern = /<!--[\s\S]*?-->|<!doctype[^>]*>|<\/?([a-zA-Z][\w:-]*)(?:\s[^<>]*)?>/gi;
-      tagPattern.lastIndex = close + 1;
-      let depth = 1;
-      let match;
-
-      while ((match = tagPattern.exec(html)) !== null) {
-        const nextToken = match[0];
-        const nextTagName = match[1] ? match[1].toLowerCase() : "";
-        if (nextTagName !== tagName || nextToken.toLowerCase().startsWith("<!doctype") || nextToken.startsWith("<!--")) continue;
-
-        if (nextToken.startsWith("</")) {
-          depth -= 1;
-        } else if (!nextToken.endsWith("/>") && !voidTags.has(nextTagName)) {
-          depth += 1;
-        }
-
-        if (depth === 0) {
-          return { start, end: tagPattern.lastIndex };
-        }
-      }
-
-      return { start, end: html.length };
-    }
-
-    function mergeSyntaxErrorRanges(ranges, errors, htmlLength) {
-      const normalizedRanges = ranges
-        .map(range => ({
-          start: Math.max(0, Math.min(range.start, htmlLength)),
-          end: Math.max(0, Math.min(range.end, htmlLength))
-        }))
-        .filter(range => range.end > range.start)
-        .sort((a, b) => a.start - b.start);
-
-      const merged = [];
-      normalizedRanges.forEach(range => {
-        const previous = merged[merged.length - 1];
-        if (previous && range.start <= previous.end) {
-          previous.end = Math.max(previous.end, range.end);
-        } else {
-          merged.push({ ...range });
-        }
-      });
-
-      merged.forEach(range => {
-        range.errors = errors.filter(error => {
-          const index = typeof error === "string" ? range.start : error.index;
-          return index >= range.start && index <= range.end;
-        });
-        if (!range.errors.length) {
-          range.errors = errors;
-        }
-      });
-
-      return merged;
-    }
-
-    function parseBlocksFromHtml(html) {
-      if (!html.trim()) return [];
-
-      const parser = new DOMParser();
-      const documentFromHtml = parser.parseFromString(html, "text/html");
-      const source = documentFromHtml.body;
-
-      return [...source.children].flatMap(element => blockFromElement(element)).filter(Boolean);
-    }
-
-    function blockFromElement(element) {
-      const tagName = element.tagName.toLowerCase();
-
-      if (["h1", "h2", "h3"].includes(tagName)) {
-        return createBlockWithValues("heading", {
-          level: tagName,
-          text: cleanText(element.textContent)
-        });
-      }
-
-      if (tagName === "p") {
-        return createBlockWithValues("paragraph", {
-          text: getInlineContentValue(element),
-          style: element.getAttribute("style") || ""
-        });
-      }
-
-      if (tagName === "img") {
-        return createBlockWithValues("image", {
-          src: element.getAttribute("src") || "",
-          alt: element.getAttribute("alt") || ""
-        });
-      }
-
-      if (tagName === "a") {
-        return createBlockWithValues(element.classList.contains("button") ? "button-link" : "text-link", {
-          text: cleanText(element.textContent) || "連結",
-          href: element.getAttribute("href") || ""
-        });
-      }
-
-      if (tagName === "section") {
-        const title = element.querySelector("h1, h2, h3");
-        const paragraph = element.querySelector("p");
-        return createBlockWithValues("section", {
-          title: title ? cleanText(title.textContent) : "區塊",
-          text: paragraph ? getInlineContentValue(paragraph) : cleanText(element.textContent)
-        });
-      }
-
-      if (tagName === "ul" || tagName === "ol") {
-        const items = [...element.children]
-          .filter(child => child.tagName.toLowerCase() === "li")
-          .map(child => getInlineContentValue(child))
-          .filter(Boolean)
-          .join("\n");
-        return createBlockWithValues(tagName === "ol" ? "ol-list" : "ul-list", {
-          items,
-          marker: element.getAttribute("type") || "1"
-        });
-      }
-
-      if (tagName === "li") {
-        const linkedListItemBlock = createLinkedListItemBlock(element);
-        if (linkedListItemBlock) return linkedListItemBlock;
-
-        return createBlockWithValues("li-item", {
-          text: getInlineContentValue(element)
-        });
-      }
-
-      if (tagName === "br") {
-        return createBlockWithValues("line-break", {});
-      }
-
-      if (tagName === "label") {
-        const input = element.querySelector("input");
-        const labelText = cleanText([...element.childNodes]
-          .filter(node => node.nodeType === Node.TEXT_NODE)
-          .map(node => node.textContent)
-          .join(" "));
-
-        if (input) {
-          return createBlockWithValues("text-input", {
-            label: labelText || "欄位",
-            placeholder: input.getAttribute("placeholder") || ""
-          });
-        }
-      }
-
-      return createBlockWithValues("unsupported", {
-        tag: `<${tagName}> 積木`,
-        html: element.outerHTML
-      });
-    }
-
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function escapeAttribute(value) {
-      return escapeHtml(value).replaceAll("\n", " ");
-    }
-
-    function attributeIfPresent(name, value) {
-      const trimmedValue = String(value || "").trim();
-      return trimmedValue ? ` ${name}="${escapeAttribute(trimmedValue)}"` : "";
-    }
-
-    function inlineContentHtml(value) {
-      const rawValue = String(value || "");
-      if (!rawValue.trim()) return "";
-      return hasOnlyInlineHtmlTags(rawValue) ? rawValue : escapeHtml(rawValue);
-    }
-
-    function hasOnlyInlineHtmlTags(value) {
-      const allowedTags = new Set(["a", "abbr", "b", "br", "code", "em", "i", "small", "span", "strong", "sub", "sup", "u"]);
-      const tagPattern = /<\/?\s*([a-zA-Z][\w:-]*)(?:\s[^<>]*)?>/g;
-      const matches = [...String(value).matchAll(tagPattern)];
-      return matches.length > 0 && matches.every(match => allowedTags.has(match[1].toLowerCase()));
-    }
-
-    function getInlineContentValue(element) {
-      return element.children.length ? element.innerHTML.trim() : cleanText(element.textContent);
-    }
-
-    function createLinkedListItemBlock(element) {
-      const links = [...element.querySelectorAll("a")];
-      if (links.length !== 1) return null;
-
-      const link = links[0];
-      const innerHtml = element.innerHTML.trim();
-      const linkHtml = link.outerHTML;
-      const linkIndex = innerHtml.indexOf(linkHtml);
-      if (linkIndex < 0) return null;
-
-      return createBlockWithValues("li-link-item", {
-        before: innerHtml.slice(0, linkIndex),
-        linkText: cleanText(link.textContent) || "連結",
-        href: link.getAttribute("href") || "",
-        after: innerHtml.slice(linkIndex + linkHtml.length)
-      });
-    }
-
-    function cleanText(value) {
-      return String(value).replace(/\s+/g, " ").trim();
-    }
-
-    function indent(value, spaces) {
-      const padding = " ".repeat(spaces);
-      return value.split("\n").map(line => padding + line).join("\n");
-    }
-
-    function loadSample() {
-      state.blocks = [
-        createBlock("heading"),
-        createBlock("paragraph"),
-        createBlock("image"),
-        createBlock("section"),
-        createBlock("ul-list"),
-        createBlock("button-link")
-      ];
-      state.blocks[0].values.text = "拖曳式 HTML 頁面";
-      state.blocks[1].values.text = "用像 Scratch 一樣的方式，把內容積木組成可以直接使用的 HTML。";
-      state.blocks[2].values.src = "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&auto=format&fit=crop";
-      state.blocks[2].values.alt = "工作桌上的電腦";
-      state.blocks[3].values.title = "即時預覽";
-      state.blocks[3].values.text = "每次修改內容，右側畫面和 HTML 都會一起更新。";
-      state.blocks[4].values.items = "快速排版\n即時預覽\n輸出 HTML";
-      state.blocks[5].values.text = "了解更多";
-      state.blocks[5].values.href = "https://example.com";
-      renderWorkspace();
-      updateOutput();
-    }
-
-    workspaceDrop.addEventListener("dragover", event => {
-      event.preventDefault();
-      workspaceDrop.classList.add("is-over");
-      event.dataTransfer.dropEffect = state.draggedBlockId ? "move" : "copy";
-      updateDropPreview(getDropIndex(event));
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => showLesson(tab.dataset.target));
     });
 
-    workspaceDrop.addEventListener("dragleave", event => {
-      if (!workspaceDrop.contains(event.relatedTarget)) {
-        workspaceDrop.classList.remove("is-over");
-        clearDropPreview();
-      }
+    document.querySelectorAll("[data-jump]").forEach((button) => {
+      button.addEventListener("click", () => showLesson(button.dataset.jump));
     });
 
-    workspaceDrop.addEventListener("drop", event => {
-      event.preventDefault();
-      workspaceDrop.classList.remove("is-over");
-      const index = state.dragPreviewIndex ?? getDropIndex(event);
-      clearDropPreview();
-
-      if (state.draggedBlockId) {
-        moveBlock(state.draggedBlockId, index);
-      } else if (state.draggedSourceType) {
-        insertBlock(state.draggedSourceType, index);
-      }
-
-      state.draggedBlockId = null;
-      state.draggedSourceType = null;
+    document.querySelectorAll(".next").forEach((button) => {
+      button.addEventListener("click", () => showLesson(button.dataset.next));
     });
 
-    blockInfoClose.addEventListener("click", hideBlockInfo);
-
-    blockInfoModal.addEventListener("click", event => {
-      if (event.target === blockInfoModal) {
-        hideBlockInfo();
-      }
-    });
-
-    openBlockLibrary.addEventListener("click", showBlockLibrary);
-
-    blockLibraryClose.addEventListener("click", hideBlockLibrary);
-
-    blockLibraryModal.addEventListener("click", event => {
-      if (event.target === blockLibraryModal) {
-        hideBlockLibrary();
-      }
-    });
-
-    document.addEventListener("keydown", event => {
-      if (event.key === "Escape" && !blockInfoModal.hidden) {
-        hideBlockInfo();
-      }
-      if (event.key === "Escape" && !blockLibraryModal.hidden) {
-        hideBlockLibrary();
-      }
-    });
-
-    previewSplitter.addEventListener("pointerdown", event => {
-      isResizingPreview = true;
-      previewSplitter.classList.add("is-dragging");
-      previewSplitter.setPointerCapture(event.pointerId);
-      event.preventDefault();
-    });
-
-    previewSplitter.addEventListener("pointermove", event => {
-      if (!isResizingPreview) return;
-
-      const rect = previewPane.getBoundingClientRect();
-      const topHeight = event.clientY - rect.top;
-      const minHeight = 120;
-      const maxHeight = rect.height - minHeight - previewSplitter.offsetHeight;
-      const nextHeight = Math.min(Math.max(topHeight, minHeight), maxHeight);
-      previewPane.style.setProperty("--preview-pane-height", `${nextHeight}px`);
-    });
-
-    function stopPreviewResize(event) {
-      if (!isResizingPreview) return;
-      isResizingPreview = false;
-      previewSplitter.classList.remove("is-dragging");
-      if (event.pointerId !== undefined && previewSplitter.hasPointerCapture(event.pointerId)) {
-        previewSplitter.releasePointerCapture(event.pointerId);
-      }
-    }
-
-    previewSplitter.addEventListener("pointerup", stopPreviewResize);
-    previewSplitter.addEventListener("pointercancel", stopPreviewResize);
-
-    htmlOutput.addEventListener("input", () => {
-      updateLineNumbers();
-      preview.srcdoc = wrapBodyHtml(htmlOutput.value);
-      clearTimeout(reverseTimer);
-      reverseTimer = setTimeout(() => {
-        syncWorkspaceFromHtml(htmlOutput.value);
-      }, 250);
-    });
-
-    htmlOutput.addEventListener("paste", () => {
+    document.querySelector("[data-jump-lab]").addEventListener("click", () => {
+      showLesson(5);
       setTimeout(() => {
-        const errors = validateHtmlSyntax(htmlOutput.value);
-        if (errors.length) {
-          syncWorkspaceFromHtml(htmlOutput.value);
-          return;
-        }
+        document.getElementById("promptLab").scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 220);
+    });
 
-        clearGlobalCodeErrors();
-        const formatted = formatHtmlSnippet(htmlOutput.value);
-        htmlOutput.value = formatted;
-        updateLineNumbers();
-        preview.srcdoc = wrapBodyHtml(formatted);
-        syncWorkspaceFromHtml(formatted);
+    document.querySelectorAll("[data-quiz]").forEach((quiz) => {
+      const options = Array.from(quiz.querySelectorAll(".quiz-option"));
+      const feedback = quiz.querySelector(".feedback");
+      options.forEach((option) => {
+        option.addEventListener("click", () => {
+          options.forEach((item) => {
+            item.classList.remove("correct", "wrong");
+            item.disabled = false;
+          });
+          if (option.dataset.correct === "true") {
+            option.classList.add("correct");
+          } else {
+            option.classList.add("wrong");
+            const correct = options.find((item) => item.dataset.correct === "true");
+            if (correct) correct.classList.add("correct");
+          }
+          feedback.classList.add("show");
+        });
       });
     });
 
-    htmlOutput.addEventListener("scroll", syncLineNumberScroll);
+    function textFromCodebox(button) {
+      const pre = button.parentElement.querySelector("pre");
+      return pre ? pre.textContent.trim() : "";
+    }
 
-    platformMode.addEventListener("change", event => {
-      state.platformMode = event.target.value;
-      if (state.platformMode !== "ios") {
-        state.iosMode = "wkwebview";
-      }
-      if (state.platformMode !== "android") {
-        state.androidMode = "webview";
-      }
-      updateOutput();
-    });
-
-    iosMode.addEventListener("change", event => {
-      state.iosMode = event.target.value;
-      updateOutput();
-    });
-
-    iosFontScale.addEventListener("change", event => {
-      state.iosFontScale = event.target.value;
-      updateOutput();
-    });
-
-    iosDarkMode.addEventListener("change", event => {
-      state.iosDarkMode = event.target.checked;
-      updateOutput();
-    });
-
-    iosHideImages.addEventListener("change", event => {
-      state.iosHideImages = event.target.checked;
-      updateOutput();
-    });
-
-    iosDisableLinks.addEventListener("change", event => {
-      state.iosDisableLinks = event.target.checked;
-      updateOutput();
-    });
-
-    iosStrictAttributed.addEventListener("change", event => {
-      state.iosStrictAttributed = event.target.checked;
-      updateOutput();
-    });
-
-    androidMode.addEventListener("change", event => {
-      state.androidMode = event.target.value;
-      updateOutput();
-    });
-
-    androidFontScale.addEventListener("change", event => {
-      state.androidFontScale = event.target.value;
-      updateOutput();
-    });
-
-    androidDarkMode.addEventListener("change", event => {
-      state.androidDarkMode = event.target.checked;
-      updateOutput();
-    });
-
-    androidHideImages.addEventListener("change", event => {
-      state.androidHideImages = event.target.checked;
-      updateOutput();
-    });
-
-    androidDisableLinks.addEventListener("change", event => {
-      state.androidDisableLinks = event.target.checked;
-      updateOutput();
-    });
-
-    androidStrictHtml.addEventListener("change", event => {
-      state.androidStrictHtml = event.target.checked;
-      updateOutput();
-    });
-
-    previewWidth.addEventListener("input", event => {
-      state.previewWidth = event.target.value;
-      updateModeUi();
-    });
-
-    previewHeight.addEventListener("input", event => {
-      state.previewHeight = event.target.value;
-      updateModeUi();
-    });
-
-    document.querySelector("#copyHtml").addEventListener("click", async () => {
+    async function copyText(text, button) {
       try {
-        await navigator.clipboard.writeText(htmlOutput.value);
+        await navigator.clipboard.writeText(text);
+        const old = button.textContent;
+        button.textContent = "已複製";
+        setTimeout(() => {
+          button.textContent = old;
+        }, 1100);
       } catch {
-        htmlOutput.focus();
-        htmlOutput.select();
-        document.execCommand("copy");
+        window.prompt("複製這段文字：", text);
       }
-      copyState.textContent = "已複製";
-      setTimeout(() => copyState.textContent = "", 1400);
+    }
+
+    document.querySelectorAll("[data-copy]").forEach((button) => {
+      button.addEventListener("click", () => copyText(textFromCodebox(button), button));
     });
 
-    document.querySelector("#downloadHtml").addEventListener("click", () => {
-      const blob = new Blob([generateFullHtml()], { type: "text/html" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "scratch-html-page.html";
-      link.click();
-      URL.revokeObjectURL(link.href);
+    const featureInput = document.getElementById("featureInput");
+    const labOutput = document.getElementById("labOutput");
+    const generatePrompt = document.getElementById("generatePrompt");
+    const copyGenerated = document.getElementById("copyGenerated");
+
+    function buildPrompt() {
+      const feature = featureInput.value.trim() || "新增一個新 feature";
+      return `請使用 SDD Feature Development 流程協助我做這個功能：${feature}
+
+規則：
+1. 先不要修改檔案，也不要寫 code。
+2. 請先產出 spec，包含：
+   - user stories
+   - in scope
+   - out of scope
+   - UI states
+   - data states
+   - acceptance criteria
+3. 如果需求不清楚，請先列出需要確認的問題。
+4. 等我確認 spec 後，才可以讀專案並產出 implementation plan。
+5. plan 必須包含 affected files、data flow、risks、verification method。
+6. 接著把 plan 拆成 tasks，每個 task 都要有 done criteria。
+7. 實作時一次只做一個 task，完成後回報修改檔案與驗證結果。`;
+    }
+
+    generatePrompt.addEventListener("click", () => {
+      labOutput.textContent = buildPrompt();
     });
 
-    document.querySelector("#clearWorkspace").addEventListener("click", () => {
-      state.blocks = [];
-      renderWorkspace();
-      updateOutput();
-    });
-
-    document.querySelector("#loadSample").addEventListener("click", loadSample);
-
-    renderToolbox();
-    renderWorkspace();
-    updateOutput();
-    syncLineNumberScroll();
+    copyGenerated.addEventListener("click", () => copyText(labOutput.textContent, copyGenerated));
   </script>
 </body>
 </html>
